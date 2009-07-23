@@ -23,4 +23,5 @@ Revision history for Perl extension API::Plesk.
     Jul 31 17:31:47 SAMST 2008
     - Fixed Build.PL (Test::LongString not in prereqs_build  list but required )
     - Add URI.pm as required module for test stage
-
+1.08
+    Patch from Nikolay Shulyakovskiy
