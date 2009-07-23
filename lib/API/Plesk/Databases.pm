@@ -3,6 +3,7 @@
 #   Plesk communicate interface. Static methods for managing databases.
 # AUTHORS:
 #   Pavel Odintsov (nrg) <pavel.odintsov@gmail.com>
+#   Nikolay Shulyakovskiy (nikolas) <shulyakovskiy@rambler.ru>
 #
 #========================================================================
 
@@ -184,6 +185,7 @@ Blank.
 =head1 AUTHOR
 
 Odintsov Pavel E<lt>nrg[at]cpan.orgE<gt>
+Nikolay Shulyakovskiy E<lt>shulyakovskiy[at]rambler.ruE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 

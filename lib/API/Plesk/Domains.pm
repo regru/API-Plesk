@@ -3,6 +3,7 @@
 #   Plesk communicate interface. Static methods for managing domain accounts.
 # AUTHORS:
 #   Pavel Odintsov (nrg) <pavel.odintsov@gmail.com>
+#   Nikolay Shulyakovskiy (nikolas) <shulyakovskiy@rambler.ru>
 #
 #========================================================================
 
@@ -122,11 +123,6 @@ sub create_response_parse {
 }
 
 
-# Modify element
-# STATIC
-sub modify {
-    # stub
-}
 
 
 # SET response handler
@@ -163,15 +159,36 @@ sub get {
             client_id        =>  $params{client_id} 
         );
     } elsif ($params{client_login}) {
+
         $filter =  create_filter(
             login_field_name => 'client_login',
             client_login     =>  $params{client_login} 
         );
+
+    } elsif ($params{domain_name}) {
+
+        $filter =  create_filter(
+            login_field_name => 'domain_name',
+            domain_name      =>  $params{domain_name},
+        );
+
+    } elsif ( $params{all} ) {
+        $filter = create_node( 'filter' );
     } else {
         return '';
     }
 
-    return construct_request_xml( 'domain', 'get', $filter . create_node('dataset', create_node('stat')));
+    my $addition_blocks = ($params{stat} ? create_node('stat') : '') .
+       ($params{limits} ? create_node('limits') : '');
+  
+    return construct_request_xml( 'domain', 'get', $filter . create_node('dataset', $addition_blocks));
+ 
+    # hm....TODO 
+    # don`t use limits, preferences sequence!!!!
+    # only preferences, limits! Probably Plesk bug.
+    return construct_request_xml('client', 'get', $filter, 
+        create_node ('dataset', create_node('gen_info') . $addition_blocks)
+    );
 }
 
 
@@ -179,8 +196,59 @@ sub get {
 # STATIC
 sub get_response_parse {
     my $xml_response = shift;
+  
+    my $parse_result = $xml_response ? abstract_parser('get', $xml_response, [ ]) : '';
+    return '' unless $parse_result;
+        
+    if (ref $parse_result eq 'HASH') {
+        if ($parse_result->{'data'}) {
+            
+            my $limits = ($parse_result->{'data'} =~ m#<limits>(.*?)</limits>#sio)[0];
+            
+            if ($limits) {
+                $limits = xml_extract_values( transform_block($limits, 'limit') );
+                $parse_result->{'limits'} = $limits;
+            }
 
-    return $xml_response ? abstract_parser('get', $xml_response, [ ]) : '';
+            my $stat = ($parse_result->{'data'} =~ m#<stat>(.*?)</stat>#sio)[0];
+
+            if ($stat){
+                $stat = xml_extract_values( transform_block($stat, 'stat') );
+                $parse_result->{'stat'} = $stat;
+            }
+
+            $parse_result->{'data'} = xml_extract_values(
+                    ( $parse_result->{'data'} 
+                        =~ m#<gen_info>(.*?)</gen_info>#sio)[0]);
+
+            return '' unless $parse_result->{'data'};
+        } 
+    } elsif (ref $parse_result eq 'ARRAY'){ # multiple blocks
+        foreach my $element (@$parse_result) {
+
+            if ($element->{'data'}) {
+                $element->{'data'} = xml_extract_values(( $element->{'data'} 
+                    =~ m#<gen_info>(.*?)</gen_info>#sio )[0]);
+
+                return '' unless $element->{'data'};
+            } 
+        }
+    } else {
+        return ''; 
+    }
+
+    return $parse_result;
+}
+
+sub transform_block {
+    my ($block, $sub_block_name) = @_; 
+
+    for ($block) {
+        s#<name>(.*?)</name><value>(.*?)</value>#<$1>$2</$1>#sgi;
+        s#</?$sub_block_name>##sgi;
+    }
+
+    return $block;
 }
 
 
@@ -193,6 +261,7 @@ Blank.
 =head1 AUTHOR
 
 Odintsov Pavel E<lt>nrg[at]cpan.orgE<gt>
+Nikolay Shulyakovskiy E<lt>shulyakovskiy[at]rambler.ruE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 

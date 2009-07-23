@@ -44,7 +44,7 @@ is_string(
         client_id => 123
     ),
     
-    '<domain><get><filter><client_id>123</client_id></filter><dataset><stat/></dataset></get></domain>',
+    '<domain><get><filter><client_id>123</client_id></filter><dataset></dataset></get></domain>',
     'get domains by client_id test',
 );
 
@@ -54,6 +54,6 @@ is_string(
         client_login => 'nrg'
     ),
     
-    '<domain><get><filter><client_login>nrg</client_login></filter><dataset><stat/></dataset></get></domain>',
+    '<domain><get><filter><client_login>nrg</client_login></filter><dataset></dataset></get></domain>',
     'get domains gy client_login test',
 );

@@ -3,6 +3,7 @@
 #   Plesk communicate interface. Main class.
 # AUTHORS:
 #   Pavel Odintsov (nrg) <pavel.odintsov@gmail.com>
+#   Nikolay Shulyakovskiy E<lt>shulyakovskiy[at]rambler.ruE<gt>
 #
 #========================================================================
 
@@ -355,6 +356,7 @@ Plesk XML RPC API  http://www.parallels.com/en/products/plesk/docs/
 =head1 AUTHOR
 
 Odintsov Pavel E<lt>nrg[at]cpan.orgE<gt>
+Nikolay Shulyakovskiy E<lt>shulyakovskiy[at]rambler.ruE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 

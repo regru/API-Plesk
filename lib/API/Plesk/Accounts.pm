@@ -3,6 +3,7 @@
 #   Plesk communicate interface. Static methods for managing user accounts.
 # AUTHORS:
 #   Pavel Odintsov (nrg) <pavel.odintsov@gmail.com>
+#   Nikolay Shulyakovskiy (nikolas) <shulyakovskiy@rambler.ru>
 #
 #========================================================================
 
@@ -283,7 +284,7 @@ One of the following options:
 # STATIC( %args )
 # login => 'userlogin', id => 12312, all => 1
 sub get {
-    my %params = (permissions => 0, limits => 0, @_);
+    my %params = (permissions => 0, limits => 0, stat => 0, @_);
 
     my $filter = '';
 
@@ -295,10 +296,13 @@ sub get {
             create_filter( login_field_name => 'login', login => $params{'login'});
     } else {
         $filter = '';
-    }
-    
-    my $addition_blocks = ($params{permissions} ? create_node('permissions') : '') .
-        ($params{limits} ? create_node('limits') : '');
+    } 
+
+    my $addition_blocks = 
+       ( $params{stat}        ? create_node('stat')        : '' ) .
+       ( $params{permissions} ? create_node('permissions') : '' ) .
+       ( $params{limits}      ? create_node('limits')      : '' ) .
+       ( $params{ippool}      ? create_node('ippool')      : '' );
 
     # don`t use limits, preferences sequence!!!!
     # only preferences, limits! Probably Plesk bug.
@@ -328,6 +332,21 @@ sub get_response_parse {
                 $parse_result->{'limits'} = $limits;
             }
 
+
+            my $stat = ($parse_result->{'data'} =~ m#<stat>(.*?)</stat>#sio)[0];
+           
+            if ($stat) {
+                $stat = xml_extract_values( transform_block($stat, 'stat') );
+                $parse_result->{'stat'} = $stat;
+            }
+ 
+            my $ippool = ($parse_result->{'data'} =~ m#<ippool>(.*?)</ippool>#sio)[0];
+             
+            if ($ippool) {
+               $ippool = xml_extract_values( transform_block($ippool, 'ippool') );
+               $parse_result->{'ippool'} = $ippool;
+            }
+
             my $permissions = ($parse_result->{'data'} =~ m#<permissions>(.*?)</permissions>#sio)[0];
 
             if ($permissions){
@@ -343,6 +362,34 @@ sub get_response_parse {
         } 
     } elsif (ref $parse_result eq 'ARRAY'){ # multiple blocks
         foreach my $element (@$parse_result) {
+            my $limits = ($element->{'data'} =~ m#<limits>(.*?)</limits>#sio)[0];
+             
+            if ($limits) {
+                $limits = xml_extract_values( transform_block($limits, 'limit') );
+                $element->{'limits'} = $limits;
+            }
+ 
+            my $stat = ($element->{'data'} =~ m#<stat>(.*?)</stat>#sio)[0];
+            
+            if ($stat) {
+                $stat = xml_extract_values( transform_block($stat, 'stat') );
+                $element->{'stat'} = $stat;
+            }
+
+            my $ippool = ($element->{'data'} =~ m#<ippool>(.*?)</ippool>#sio)[0];
+            
+            if ($ippool) {
+                $ippool = xml_extract_values( transform_block($ippool, 'ippool') );
+                $element->{'ippool'} = $ippool;
+            }
+
+            my $permissions = ($element->{'data'} =~ m#<permissions>(.*?)</permissions>#sio)[0];
+
+            if ($permissions){
+                $permissions = xml_extract_values( transform_block($permissions, 'permission') );
+                $element->{'permissions'} = $permissions;
+            }
+
 
             if ($element->{'data'}) {
                 $element->{'data'} = xml_extract_values(( $element->{'data'} 
@@ -400,6 +447,7 @@ Blank.
 =head1 AUTHOR
 
 Odintsov Pavel E<lt>nrg[at]cpan.orgE<gt>
+Nikolay Shulyakovskiy E<lt>shulyakovskiy[at]rambler.ruE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
