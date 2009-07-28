@@ -145,14 +145,21 @@ sub delete_response_parse {
 # Get all element data
 # STATIC
 sub get {
-    # stub
+    my %params = @_;
+
+    return "<database><get-db><filter><domain-name>$params{domain_name}</domain-name>" .
+        "</filter></get-db></database>";
 }
 
 
 # GET response handler
 # STATIC
 sub get_response_parse {
-    # stub
+    my $xml_response = shift;
+
+    my $result = $xml_response ? abstract_parser('get-db', $xml_response, [ ]) : '';
+    ## warn Dumper($result);
+    return $result;
 }
 
 
