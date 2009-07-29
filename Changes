@@ -25,3 +25,6 @@ Revision history for Perl extension API::Plesk.
     - Add URI.pm as required module for test stage
 1.08
     Patch from Nikolay Shulyakovskiy
+1.09
+    Add Mail/DB/DBUsers/Domains export from Plesk
+    
