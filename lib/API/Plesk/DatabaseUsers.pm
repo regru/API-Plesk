@@ -59,14 +59,27 @@ Return:
 # Create element
 # STATIC (%params)
 sub create {
-    # stub
+    my %params = @_;
+
+    return '' unless $params{'login'}     &&
+                     $params{'db-id'}     &&
+                     $params{'password'};
+
+    my $db_params = '';
+    foreach my $key ('db-id', 'login', 'password') {   
+        $db_params .= create_node( $key, $params{$key});
+    }
+
+    return construct_request_xml( 'database', 'add-db-user', $db_params );
 }
 
 
 # Parse XML response
 # STATIC (xml_response)
 sub create_response_parse {
-    # stub
+    my $xml_response = shift;
+
+    return $xml_response ? abstract_parser('add-db-user', $xml_response, [ ]) : '';
 }
 
 
@@ -91,13 +104,34 @@ Return:
 # Delete element
 # STATIC( %args )
 sub delete {
-    # stub
+    my %params = @_;
+
+    my $db_filter = '';
+
+    if ($params{'id'}) {
+        $db_filter = create_filter(
+            login_field_name => 'id',
+            'id'             => $params{'id'}
+       ); 
+    } elsif ( $params{'db-id'} ) {
+        $db_filter = create_filter(
+            login_field_name => 'db-id',
+            'db-id'          => $params{'db-id'}
+        );
+    } else {
+        return ''; # errror
+    }
+
+    return construct_request_xml( 'database', 'del-db-user', $db_filter );
 }
 
 
 # DEL response handler
 # STATIC
 sub delete_response_parse {
+    my $xml_response = shift;
+
+    return $xml_response ? abstract_parser('del-db-user', $xml_response, [ ]) : '';
     # stub
 }
 

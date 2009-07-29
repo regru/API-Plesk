@@ -7,6 +7,7 @@ lib/API/Plesk/Databases.pm
 lib/API/Plesk/DatabaseUsers.pm
 lib/API/Plesk/DomainAliases.pm
 lib/API/Plesk/Domains.pm
+lib/API/Plesk/Mail.pm
 lib/API/Plesk/Methods.pm
 lib/API/Plesk/Response.pm
 lib/API/Plesk/Templates.pm
