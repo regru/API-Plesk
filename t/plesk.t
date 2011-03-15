@@ -5,7 +5,7 @@ use Carp;
 use Test::More;
 use Data::Dumper;
 
-use lib 't';
+use lib qw(t lib);
 use TestData;
 
 BEGIN {
@@ -16,65 +16,34 @@ BEGIN {
     use_ok( 'API::Plesk' );
 }
 
-my $plesk_client = API::Plesk->new( %TestData::plesk_valid_params );
+my $api = API::Plesk->new( %TestData::plesk_valid_params );
 
-isa_ok( $plesk_client, 'API::Plesk', 'STATIC call new' );
+isa_ok( $api, 'API::Plesk', 'STATIC call new' );
 
-my $yet_another_plesk_client = $plesk_client->new( %TestData::plesk_valid_params );
+my $yet_another_api = $api->new( %TestData::plesk_valid_params );
 
-isa_ok( $plesk_client, 'API::Plesk', 'INSTANCE call new' );
-isnt( $plesk_client, $yet_another_plesk_client, 'object compare' );
+isa_ok( $api, 'API::Plesk', 'INSTANCE call new' );
+isnt( $api, $yet_another_api, 'object compare' );
 
-# check _blank_ query`s to Plesk.pm methods
+# render_xml
 
-is_deeply( 
-    $plesk_client->plesk_query( q// )->get_error_string, 
-    'plesk_query: blank request',
-    'blank query to Plesk' 
-);
+is($api->render_xml({
+    webspace => {
+        add => [
+            { gen_setup => {
+                name => 'sample.com',
+                qq => sub { 'ddd' },
+                ddd => sub { {lll => 1234567} },
+            }},
+            { hosting => {
+                name => '123',
+                value => 'erty'
+            }}
+        ]
+    }
+}), '<webspace><add><gen_setup><qq>ddd</qq><name>sample.com</name><ddd><lll>1234567</lll></ddd></gen_setup><hosting><value>erty</value><name>123</name></hosting></add></webspace>', 'render_xml');
 
-ok(     
-    !$plesk_client->plesk_query('')->is_success, 
-    'blank query to Plesk' 
-);
+# compoments
 
-
-is_deeply( 
-    $plesk_client->plesk_query('test_test')->get_error_string, 
-    'plesk_query: no parser subref',
-    'blank query to Plesk' 
-);
-
-# execute_query
-
-ok( 
-    !$plesk_client->_execute_query(''), 
-    'Blank low level query to _execute_query, false'
-);
-
-
-# check_xml_answer
-
-is_deeply(  
-    $plesk_client->check_xml_answer('')->get_error_string,
-    'check_xml_answer: blank query to check_xml_answer',
-    'check blank query to check_xml_answer'
-);
-
-is_deeply(  
-    $plesk_client->check_xml_answer('test_test')->get_error_string,
-    'check_xml_answer: no parser subref',
-    'check blank query2 to check_xml_answer'
-);
-
-
-# Calling undefined method from Plesk.pm
-
-{
-    our $our_warning;
-    local $SIG{__DIE__} = sub { $our_warning = shift; }; # confess <=> die
-    eval { API::Plesk->new(%TestData::plesk_valid_params)->aaa__bbbccc() };
-    like($our_warning, qr/aaa__bbbccc/,
-         'Checking AUTOLOAD by calling undefined method.');
-}
+isa_ok($api->customers, 'API::Plesk::Customers', 'has_components');
 

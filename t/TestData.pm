@@ -109,7 +109,7 @@ our $stress_test_data = {
 my $plesk_url = 'https://192.168.1.1:8443/enterprise/control/agent.php';
 
 our %plesk_valid_params = (
-    api_version   => '1.5.0.0',
+    api_version   => '1.6.3.0',
     username      => 'admin',
     password      => 'qwerty',
     url           => $plesk_url,

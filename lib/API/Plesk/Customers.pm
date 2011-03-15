@@ -1,21 +1,12 @@
-#
-# DESCRIPTION:
-#   Plesk communicate interface. Static methods for managing user accounts.
-# AUTHORS:
-#   Pavel Odintsov (nrg) <pavel.odintsov@gmail.com>
-#   Nikolay Shulyakovskiy (nikolas) <shulyakovskiy@rambler.ru>
-#
-#========================================================================
 
-package API::Plesk::Accounts;
+package API::Plesk::Customers;
 
 use strict;
 use warnings;
 
-use API::Plesk::Methods;
 use Data::Dumper;
 
-our $VERSION = '1.03';
+use base 'API::Plesk::Component';
 
 =head1 NAME
 
@@ -43,39 +34,11 @@ The module provides full support operations with accounts.
 
 None by default.
 
-=cut
-
-# Elements of %template_data: 
-# required - 1 / optional - 0
-# min length, max length,
-# accepted values
-
-my %template_data = (
-    cname   => [0, 0, 60 ], # company name 
-    pname   => [1, 1, 60 ],
-    login   => [1, 1, 60 ],
-    passwd  => [1, 5, 14 ],
-    status  => [0, 0, 3, [0, 16]],   
-    # status: 
-    # 0 - active, 
-    # 4 - under backup / restore, 
-    # 16 - disabled,
-    # 256 Expired, 
-    # 64 - disabled by admin.
-    phone   => [0, 0, 30  ],
-    fax     => [0, 0, 30  ],
-    email   => [0, 0, 255 ],
-    address => [0, 0, 255 ],
-    city    => [0, 0, 50  ],
-    state   => [0, 0, 50  ], # For US only
-    pcode   => [0, 0, 10  ], # zip code, US only
-    country => [0, 2, 2   ], # RU
-    locale  => [0, 0, 255 ],
-);
-
 =head1 METHODS
 
 =over 3
+
+=cut
 
 =item create(%params)
 
@@ -94,35 +57,17 @@ Return: response object with created account id in data filed.
 # 1) general_info -- hashref with user data (it format in source)
 # 2) template-name or template-id -- template identificators
 sub create {
-    my %params = @_;
+    my ( $self, @params ) = @_;
 
-    if (ref ($_ = $params{'general_info'}) eq 'HASH') {
-        if (client_add_gen_info_check(%{ $params{'general_info'} })) {
+    my $data = $self->make_request_data(
+        'customer', 'add',
+        @params
+    );
 
-            my $template = '';
-        
-            if ($params{'template-name'}) {
-                
-                $template = create_node('template-name', 
-                    $params{'template-name'});
-
-            } elsif ($params{'template-id'}) {
-                
-                $template = create_node('template-id', 
-                    $params{'template-id'});
-            
-            } else {
-                return ''; # template required
-            }
-            return construct_request_xml( 'client', 'add', 
-                generate_info_block('gen_info', select_only_allowed_fields($params{'general_info'}) ), 
-                    $template);
-        } else {
-            return ''; # not enought data
-        }
-    } else {
-        return '';  # not enought data
-    }
+    return $self->make_response(
+        'customer', 'add',
+        $self->plesk->send($data)
+    );
 }
 
 # Return only allowed fields

@@ -18,10 +18,11 @@ use Carp;
 
 use HTTP::Request;
 use LWP::UserAgent;
+use XML::Fast;
 
-use API::Plesk::Response;
+our $VERSION = '2.00';
 
-our $VERSION = '1.09';
+has_component('Customers');
 
 =head1 NAME
 
@@ -57,7 +58,6 @@ For example, here the set of subs in the Accounts module is those.
 Nothing.
 
 =head1 METHODS
-
 =over 3
 
 =item new(%params)
@@ -66,7 +66,7 @@ Create new class instance.
 
 Required params:
 
-  api_version -- default: 1.5.0.0
+  api_version -- default: 1.6.3.0
   username -- Plesk user name.
   password -- Plesk password.
   url -- full url to Plesk XML RPC gate (https://ip.ad.dr.ess:8443/enterprise/control/agent.php).
@@ -82,13 +82,12 @@ sub new {
     my %params = @_;
     
     my $self = { 
-        api_version   => $params {api_version},
+        api_version   => $params {api_version} || '1.6.3.0',
         username      => $params {username},
         password      => $params {password},
         url           => $params {url},
         debug         => $params {debug},
-        package_name  => __PACKAGE__, # for parse $AUTLOAD.
-        fake_response => '',
+        timeout       => $params {timeout} || 10,
         request_debug => 0,           # only for debug XML requests
     };
     
@@ -112,67 +111,125 @@ Example:
 =cut
 
 
-# Send "short" XML query to Plesk, 
-# return Plesk::Responce object (with error handling)
-# INSTANCE (query, parser_sub)
-# query -- xml query
-# parser_sub -- ref to parser sub
-# ext_params -- arref, list of addition params for check_xml sub 
-sub plesk_query {
-    my ($self, $query, $parser_subref, $ext_params) = @_;
+# sends request to Plesk API
+sub send {
+    my ( $self, $xml, %params ) = @_;
 
-    return make_response('', 'plesk_query: blank request') unless $query;
-    return make_response('', 'plesk_query: no parser subref') unless $parser_subref;
+    confess "Wrong request data!" unless $xml && ref $xml;
 
-    $ext_params ||= '';
+    $xml = $self->render_xml($xml);
+    $xml = qq|<?xml version="1.0" encoding="UTF-8"?><packet version="$self->{api_version}">$xml</packet>|;
 
-    return $self->check_xml_answer( $self->_execute_query($query) || '', $parser_subref, $ext_params);
+    my ($response_xml, $error) = $self->xml_http_req($xml);
+
+    unless ( $error ) {
+        $response_xml = xml2hash $response_xml, array => ['result'];
+    }    
+
+    return ($response_xml, $error);
+}
+
+# Execue xml request to url
+# STATIC
+# $url: URL
+# $request: text query
+# %params:
+sub xml_http_req {
+    my ($self, $xml, %params) = @_;
+
+    my $ua = new LWP::UserAgent( parse_head => 0 );
+    my $req = new HTTP::Request POST => $self->{url};
+
+    $req->push_header(':HTTP_AUTH_LOGIN',  $self->{username});
+    $req->push_header(':HTTP_AUTH_PASSWD', $self->{password});
+    $req->content_type('text/xml; charset=$params{charset}');
+    $req->content($xml);
+
+    my $res = eval {
+        local $SIG{ALRM} = sub { die "connection timeout" };
+        alarm $self->{timeout};
+        $ua->request($req);
+    };
+    alarm 0;
+
+    return('', 'connection timeout') 
+        if !$res || $@ || ref $res && $res->status_line =~ /connection timeout/;
+
+    return $res->is_success() ?
+        ($res->content(), '') :
+        ('', $res->status_line);
 }
 
 
-# Short alias for creating Response object 
-# STATIC (server_answer, errors)
-sub make_response {
-    my ($server_answer, @errors) = @_;
+# renders xml from hash
+sub render_xml {
+    my ($self, $hash) = @_;
 
-    return  API::Plesk::Response->new ($server_answer, @errors);
-}
+    return $hash unless ref $hash;
 
+    my $xml = '';
 
-# Send XML query to Plesk, return not parsed XML answer without error handling
-# INSTANCE(xml_request)
-sub _execute_query {
-    my ($self, $xml_request) = @_;
-
-    # packet version override for 
-    my $packet_version =  ($xml_request =~ m#<domain>.*?<add>#is) ?
-        '1.4.2.0' : $self->{'api_version'};
-
-    return unless $xml_request;
-    my $xml_packet_struct = <<"    DOC";
-        <?xml version="1.0" encoding="UTF-8"?>
-        <packet version="$packet_version"> 
-            $xml_request
-        </packet>
-    DOC
-
-    return xml_http_req(
-        $self->{'url'},
-        $xml_packet_struct,
-
-        headers => {
-            ':HTTP_AUTH_LOGIN'  => $self->{'username'},
-            ':HTTP_AUTH_PASSWD' => $self->{'password'},
+    for my $tag ( keys %$hash ) {
+        my $value = $hash->{$tag};
+        if ( ref $value eq 'HASH' ) {
+            $value = $self->render_xml($value);
         }
-    );
+        elsif ( ref $value eq 'ARRAY' ) {
+            my $tmp;
+            $tmp .= $self->render_xml($_) for ( @$value );
+            $value = $tmp;
+        }
+        elsif ( ref $value eq 'CODE' ) {
+            $value = $self->render_xml(&$value);
+        }
+    
+        if ( $value ) {
+            $xml .= "<$tag>$value</$tag>";
+        }
+        else {
+            $xml .= "<$tag/>";
+        }
+    }
+
+    $xml; 
+}
+
+# creates access method to compoment
+sub has_component {
+    my ( $name ) = @_;
+
+    my $pkg = caller;
+    my $component_pkg = "$pkg\::$name";
+    $name =~ s/^(.)/lc($1)/e;
+    
+    no strict 'refs';
+    
+    *{"$pkg\::$name"} = sub {
+        my( $self ) = @_;
+        $self->{"_$name"} ||= load_component($component_pkg);
+        return $self->{"_$name"};
+    }
+}
+
+# loads component package and creates object
+sub load_component {
+    my ( $pkg ) = @_;
+    my $pkg = "$pkg.pm";
+    $pkg =~ s/::/\//g;
+    local $@;
+    eval { require $pkg };
+    if ( $@ ) {
+        confess "Failed to load $pkg: $@!";
+    }
+    return $pkg->new;
 }
 
 
 # Check xml structure and find status block with error flag
-# INSTANCE
+# OLD
 sub check_xml_answer {
     my ($self, $checked_xml, $parser_sub, $ext_params) = @_;
-
+    warn $checked_xml;
     unless ($checked_xml) {
         return make_response('',
             'check_xml_answer: blank query to check_xml_answer'); 
@@ -210,145 +267,10 @@ sub check_xml_answer {
     return scalar @errors ? make_response('', @errors) : make_response($result);
 }
 
-
-# Select requested methods on the fly :)
-# INSTANCE(category, operation_type, params)
-# category -- Domains, Templates, Accounts
-# operation_type -- create, modify, delete, get
-# params -- arref params to sub
-sub process_autoload_sub {
-    my ($self, $category, $operation_type, $params) = @_;   
-
-    no strict 'refs';
-
-    my $sub_prefix = "$self->{package_name}::${category}::${operation_type}";
-    my $parser_sub_prefix = $sub_prefix . '_response_parse';
-
-    my $get_xml_sub_ref        = \&{$sub_prefix}; 
-    my $response_parser_subref = \&{$parser_sub_prefix};
-            
-    unless (ref $get_xml_sub_ref eq 'CODE' &&
-            ref $response_parser_subref eq 'CODE') {
-        confess 'Error while loading $sub_prefix or $parser_sub_prefix !';
-    }
-
-    if ($self->{'fake_response'}) {
-        return $self->check_xml_answer( $self->{'fake_response'}, 
-            $response_parser_subref);
-    }
-
-    my $xml_request = $get_xml_sub_ref->(@$params);
-
-    if ($self->{'request_debug'}) {
-        return $self->_execute_query($xml_request); # return raw data
-    }
-
-    return $self->plesk_query($xml_request, $response_parser_subref, $params);
-}
-
-# Change methods on the fly :)
-# INSTANCE
-sub AUTOLOAD {
-    my ($self, @params) = @_;
-    
-    if (our $AUTOLOAD !~ /DESTROY/) {
-        my ($category, $operation_type) = 
-            $AUTOLOAD =~ m/^$self->{'package_name'}::([a-z0-9]+)_([a-z0-9]+)$/i;        
-            
-        my ($required_package_name) =
-            $AUTOLOAD =~ m/^$self->{'package_name'}::([a-z0-9]+)$/i;
-
-        if ($required_package_name) {
-            my $req_package = $self->{package_name} . 
-                "::$required_package_name.pm";   
-            
-            $req_package =~ s#::#/#g;
-
-            confess "Not found $required_package_name module!!"
-                unless eval { require $req_package};
-
-            no strict 'refs';
-            no warnings 'redefine';
-
-            foreach my $operation ('create', 'modify', 'delete', 'get') {
-                *{"${required_package_name}::$operation"} = sub {
-                    (undef) = shift if ref $_[0] eq $required_package_name;
-
-                    return $self->process_autoload_sub(
-                        $required_package_name,
-                        $operation,
-                        \@_
-                    );
-                };
-            }
-
-            return bless {}, $required_package_name;
-
-        } else {
-
-            confess "Sub $AUTOLOAD not found!";
-
-        }
-    }
-}
-
-
-# Execue xml request to url
-# STATIC
-# $url: URL
-# $request: text query
-# %params:
-#   charset: source encoding
-#   timeout: timeout, 10 seconds as default
-#   headers: hashre -- header => value
-#   error: array for status errors
-#   errorbody: return erroneous request body to error array if defined  errorbody
-sub xml_http_req {
-    my ($url, $request, %params) = @_;
-
-    $params{timeout} ||= 10;
-
-    my $ua = new LWP::UserAgent( parse_head => 0 );
-    my $req = new HTTP::Request POST => $url;
-
-    my $content_type = 'text/xml';
-    $content_type .= "; charset=$params{charset}" if $params{charset};
-    $req->content_type($content_type);
-    $req->content( $request );
-
-    if ($params{headers} && ref $params{headers} eq 'HASH') {
-        my $headers = $params{headers};
-        foreach my $k (keys %$headers) {
-            $req->push_header( $k, $headers->{$k} );
-        }
-    }
-
-    my $res = eval {
-        local $SIG{ALRM} = sub { die "connection timeout" };
-        alarm $params{timeout};
-        $ua->request($req);
-    };
-
-    alarm 0;
-    return if !$res || $@ || 
-                ref $res && $res->status_line =~ /connection timeout/;
-
-    if ($res->is_success()) {
-        return $res->content();
-    } else {
-
-        if ($params{errorbody}) {
-            @{$params{error}} = ($res->status_line, $res->content);
-        } else {
-            warn "xml_http_req: ".$res->status_line;
-        }
-    }
-
-    return;
-}
-
 1;
+
 __END__
+
 =head1 SEE ALSO
  
 Plesk XML RPC API  http://www.parallels.com/en/products/plesk/docs/
