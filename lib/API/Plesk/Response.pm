@@ -1,18 +1,8 @@
-#
-# DESCRIPTION:
-#   Plesk communicate interface. Server response class.
-# AUTHORS:
-#   Pavel Odintsov (nrg) <pavel.odintsov@gmail.com>
-#
-#========================================================================
 
 package API::Plesk::Response;
 
 use strict;
 use warnings;
-
-our $VERSION = '1.03';
-
 
 =head1 NAME
 
@@ -46,18 +36,41 @@ $server_answer - server answer,
 # Create server response object
 # STATIC, INSTANCE
 sub new {
-    my ($class, $server_answer, @errors) = @_;
-
+    my ( $class, %attrs) = @_;
     $class = ref $class || $class;
+
+    my $operator  = $attrs{operator};
+    my $operation = $attrs{operation};
+    my @results;
+    my $is_success = 1;
+    
+    if ( $attrs{error} ) {
+        @results = ({
+            errcode => '',
+            errtext => $attrs{error},
+            status  => 'error'
+        });
+        $is_success = '';
+    }
+    else {
+        for my $dataset ( @{$attrs{response}->{$operator}} ) {
+            my $result = $dataset->{$operation}->{result};
+            $is_success = '' if $result->{status} eq 'error';
+            push @results, $result;
+        }
+    }
+    
     my $self = {
-                    error_codes  => scalar @errors > 0 ? \@errors : '',
-                    answer_data  => $server_answer || '',
-               };
+        result     => \@results,
+        operator   => $operator,
+        operation  => $operation,
+        is_success => $is_success,
+    };
 
     return bless $self, $class;
 }
 
-=item get_id
+=item id
 
 Get executed operation ID
 
@@ -67,12 +80,18 @@ Return $self->get_data->[0]->{id}, if no errors and server answer consists of on
 
 # Get executed operation ID
 # INSTANCE
-sub get_id {
-    my $self = shift;
-
-    return $self->is_success && length @{$self->get_data} == 1 ? 
-        $self->get_data->[0]->{id} : '';
+sub id {
+    my ( $self ) = @_;
+    return $self->is_success && @{$self->{result}} == 1 ? 
+        $self->result->{id} : '';
 }
+
+sub guid {
+    my ( $self ) = @_;
+    return $self->is_success && @{$self->{result}} == 1 ? 
+        $self->result->{guid} : '';
+}
+
 
 =item is_success
 
@@ -84,14 +103,7 @@ Return true if server answer not blank and no errors in answer.
 
 # Return true if no errors in response
 # INSTANCE
-sub is_success {
-    my $self = shift;
-
-    my $has_errors = ref $self->{'error_codes'} eq 'ARRAY' && 
-                     scalar @{ $self->{'error_codes'} } > 0;
-    
-    return ($has_errors || !$self->{'answer_data'}) ? '' : 1;
-}
+sub is_success { $_[0]->{is_success} }
 
 =item get_data
 
@@ -103,30 +115,32 @@ Return answer response if $instance->is_success is true.
 
 # Get data from response
 # INSTANCE
-sub get_data {
-    my $self = shift;
-
-    return $self->is_success ? $self->{'answer_data'} : '';
+sub data {
+    my ( $self, $no ) = @_;
+    return $self->is_success ? $self->{result}->[$no || 0]->{data} : undef;
 }
 
-=item get_error_code
+sub result { 
+    my ( $self ) = @_;
+    return undef unless $self->is_success;
+    return @{$self->{result}} == 1 ? $self->{result}->[0] : $self->{result};
+}
 
-Get all error codes from response as arref
+=item error_codes
+
+Get all error codes from response
 
 =cut
 
 # Get all error codes from message as arref
 # INSTANCE
-sub get_error_codes {
-    my $self = shift;
+sub error_codes {
+    my ( $self ) = @_;
 
-    if (ref $self->{'error_codes'} eq 'ARRAY') {
-        return wantarray ? @{ $self->{'error_codes'} } : $self->{'error_codes'};
-    } else {
-        return wantarray ? ( ) : '';
-    }
+    my @codes = map { ($_->{errcode}) || () } @{$self->{result}};
+
+    return wantarray ? @codes : join ", ", @codes;
 }
-
 
 =item get_error_string
 
@@ -135,17 +149,28 @@ Return joined by ', ' error codes.
 =back
 
 =cut
+sub error_texts {
+    my ( $self ) = @_;
 
-# Get error codes as string
-# INSTANCE
-sub get_error_string {
-    my $self = shift;
+    my @texts = map { ($_->{errtext}) || () } @{$self->{result}};
 
-    return join ', ', $self->get_error_codes;
+    return wantarray ? @texts : join ", ", @texts;
 }
 
+sub errors {
+    my ( $self ) = @_;
+
+    my @errors = map { 
+        $_->{errcode} || $_->{errtext} ? 
+            ("$_->{errcode}: $_->{errtext}") :
+            () 
+        } @{$self->{result}};
+
+    return wantarray ? @errors : join ", ", @errors;
+}
 
 1;
+
 __END__
 
 =head1 EXAMPLES

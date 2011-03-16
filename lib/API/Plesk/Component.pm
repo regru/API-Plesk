@@ -16,15 +16,12 @@ sub new {
 
 sub plesk { $_[0]->{plesk} }
 
-sub make_request_data {
-    my ( $self, $operator, $operation, @data ) = @_;
-
-    my $request = [];
-    for my $data ( @data ) {
-        push @$request, { $operation => $data };
+sub check_required_params {
+    my ( $self, $hash, @fields ) = @_;
+    
+    for ( @fields ) {
+        confess "Required field $_!" unless exists $hash->{$_};
     }
-
-    return { $operator => $request };
 }
 
 1;

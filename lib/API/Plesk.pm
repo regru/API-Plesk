@@ -1,28 +1,3 @@
-#
-# DESCRIPTION:
-#   Plesk communicate interface. Main class.
-# AUTHORS:
-#   Pavel Odintsov (nrg) <pavel.odintsov@gmail.com>
-#   Nikolay Shulyakovskiy E<lt>shulyakovskiy[at]rambler.ruE<gt>
-#
-#========================================================================
-
-package API::Plesk;
-
-use strict;
-use warnings;
-use lib qw(../..);
-
-use Data::Dumper;
-use Carp;
-
-use HTTP::Request;
-use LWP::UserAgent;
-use XML::Fast;
-
-our $VERSION = '2.00';
-
-has_component('Customers');
 
 =head1 NAME
 
@@ -59,6 +34,33 @@ Nothing.
 
 =head1 METHODS
 =over 3
+=cut
+
+package API::Plesk;
+
+use strict;
+use warnings;
+use lib qw(../..);
+
+use Data::Dumper;
+use Carp;
+
+use HTTP::Request;
+use LWP::UserAgent;
+use XML::Fast;
+
+use API::Plesk::Response;
+
+our $VERSION = '2.00';
+
+our %COMPONENTS = (
+    'new' => [
+        { class => 'Customers' },
+    ],
+    'old' => [
+        { class => 'Accounts', alias => 'Accounts' },
+    ]
+);
 
 =item new(%params)
 
@@ -72,25 +74,29 @@ Required params:
   url -- full url to Plesk XML RPC gate (https://ip.ad.dr.ess:8443/enterprise/control/agent.php).
 
 =cut
-
-# Create object
-# STATIC
 sub new {
     my $class = shift;
 
     $class = ref ($class) || $class;
-    my %params = @_;
     
     my $self = { 
-        api_version   => $params {api_version} || '1.6.3.0',
-        username      => $params {username},
-        password      => $params {password},
-        url           => $params {url},
-        debug         => $params {debug},
-        timeout       => $params {timeout} || 10,
-        request_debug => 0,           # only for debug XML requests
+        api_version => '1.6.3.0',
+        debug       => 0,
+        timeout     => 10,
+        (@_)
     };
-    
+
+    confess "Required username!" unless $self->{username};
+    confess "Required password!" unless $self->{password};
+    confess "Required url!" unless $self->{url};
+
+    # add accessors to components
+    my $components = 
+        version->parse($self->{api_version}) < version->parse('v1.6.3.0') ?
+        $COMPONENTS{'old'} : $COMPONENTS{'new'};
+
+    $class->add_component(%$_) for @$components;
+ 
     return bless $self, $class;
 }
 
@@ -110,23 +116,32 @@ Example:
 
 =cut
 
-
 # sends request to Plesk API
 sub send {
-    my ( $self, $xml, %params ) = @_;
+    my ( $self, $operator, $operation, $data, %params ) = @_;
 
-    confess "Wrong request data!" unless $xml && ref $xml;
+    confess "Wrong request data!" unless $data && ref $data;
+
+    my $xml = { $operator => { $operation => $data } };
 
     $xml = $self->render_xml($xml);
-    $xml = qq|<?xml version="1.0" encoding="UTF-8"?><packet version="$self->{api_version}">$xml</packet>|;
 
-    my ($response_xml, $error) = $self->xml_http_req($xml);
+    warn "REQUEST $operator => $operation\n$xml" if $self->{debug};
+
+    my ($response, $error) = $self->xml_http_req($xml);
+
+    warn "RESPONSE $operator => $operation => $error\n$response" if $self->{debug};
 
     unless ( $error ) {
-        $response_xml = xml2hash $response_xml, array => ['result'];
+        $response = xml2hash $response, array => ['result', $operation];
     }    
 
-    return ($response_xml, $error);
+    return API::Plesk::Response->new(
+        operator  => $operator,
+        operation => $operation,
+        response  => $response,
+        error     => $error,
+    );
 }
 
 # Execue xml request to url
@@ -152,7 +167,7 @@ sub xml_http_req {
     };
     alarm 0;
 
-    return('', 'connection timeout') 
+    return ('', 'connection timeout') 
         if !$res || $@ || ref $res && $res->status_line =~ /connection timeout/;
 
     return $res->is_success() ?
@@ -165,6 +180,16 @@ sub xml_http_req {
 sub render_xml {
     my ($self, $hash) = @_;
 
+    my $xml = _render_xml($hash);
+
+    $xml = qq|<?xml version="1.0" encoding="UTF-8"?><packet version="$self->{api_version}">$xml</packet>|;
+
+    $xml;
+}
+
+sub _render_xml {
+    my ( $hash ) = @_;
+
     return $hash unless ref $hash;
 
     my $xml = '';
@@ -172,15 +197,15 @@ sub render_xml {
     for my $tag ( keys %$hash ) {
         my $value = $hash->{$tag};
         if ( ref $value eq 'HASH' ) {
-            $value = $self->render_xml($value);
+            $value = _render_xml($value);
         }
         elsif ( ref $value eq 'ARRAY' ) {
             my $tmp;
-            $tmp .= $self->render_xml($_) for ( @$value );
+            $tmp .= _render_xml($_) for ( @$value );
             $value = $tmp;
         }
         elsif ( ref $value eq 'CODE' ) {
-            $value = $self->render_xml(&$value);
+            $value = _render_xml(&$value);
         }
     
         if ( $value ) {
@@ -194,34 +219,38 @@ sub render_xml {
     $xml; 
 }
 
-# creates access method to compoment
-sub has_component {
-    my ( $name ) = @_;
-
-    my $pkg = caller;
-    my $component_pkg = "$pkg\::$name";
+# creates accessors to compoment
+sub add_component {
+    my ( $class, %params ) = @_;
+    my $name = $params{class};
+    
+    my $component_pkg = "$class\::$name";
     $name =~ s/^(.)/lc($1)/e;
+
+    return if $class->can($name);
+    
+    my $sub = sub {
+        my( $self ) = @_;
+        $self->{"_$name"} ||= $self->load_component($component_pkg);
+        return $self->{"_$name"};
+    };
     
     no strict 'refs';
-    
-    *{"$pkg\::$name"} = sub {
-        my( $self ) = @_;
-        $self->{"_$name"} ||= load_component($component_pkg);
-        return $self->{"_$name"};
-    }
+
+    *{"$class\::$name"} = $sub;
 }
 
 # loads component package and creates object
 sub load_component {
-    my ( $pkg ) = @_;
-    my $pkg = "$pkg.pm";
-    $pkg =~ s/::/\//g;
+    my ( $self, $pkg ) = @_;
+    my $module = "$pkg.pm";
+    $module =~ s/::/\//g;
     local $@;
-    eval { require $pkg };
+    eval { require $module };
     if ( $@ ) {
-        confess "Failed to load $pkg: $@!";
+        confess "Failed to load $pkg: $@";
     }
-    return $pkg->new;
+    return $pkg->new(plesk => $self);
 }
 
 

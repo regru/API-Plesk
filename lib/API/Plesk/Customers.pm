@@ -4,7 +4,7 @@ package API::Plesk::Customers;
 use strict;
 use warnings;
 
-use Data::Dumper;
+use Carp;
 
 use base 'API::Plesk::Component';
 
@@ -45,51 +45,21 @@ None by default.
 Creates a user account on the basis of the template.
 
 Params:
-general_info -- hashref with user data
-template-name or template-id
 
 Return: response object with created account id in data filed.
 
 =cut
+sub add {
+    my ( $self, %params ) = @_;
+    my $gen_info = $params{gen_info} || confess "Required gen_info parameter!";
 
-# Create element
-# STATIC (%hash)
-# 1) general_info -- hashref with user data (it format in source)
-# 2) template-name or template-id -- template identificators
-sub create {
-    my ( $self, @params ) = @_;
+    $self->check_required_params($gen_info, qw(pname login passwd));
 
-    my $data = $self->make_request_data(
-        'customer', 'add',
-        @params
-    );
-
-    return $self->make_response(
-        'customer', 'add',
-        $self->plesk->send($data)
-    );
-}
-
-# Return only allowed fields
-# STATIC
-sub select_only_allowed_fields {
-    my $hashref = shift;
-
-    return map {
-        $hashref->{$_} ? ($_, $hashref->{$_}) : ( );
-    } sort keys %template_data
-}
-
-# Parse XML response
-# STATIC (xml_response)
-# return hashref if one result block
-# return arref of hashref if multiple errors 
-sub create_response_parse {
-    my $xml_from_server = shift; 
-
-    return '' unless $xml_from_server;
-
-    return abstract_parser('add', $xml_from_server, ['status']);
+    return 
+        $self->plesk->send(
+            'customer', 'add',
+            { gen_info => $gen_info }
+        );
 }
 
 =item modify(%params)
@@ -109,55 +79,25 @@ And also one of the following options:
 
 # Modify element
 # STATIC
-sub modify {
-    my %params = @_;
+sub set {
+    my ( $self, %params ) = @_;
+    my $filter   = $params{filter}   || '';
+    my $gen_info = $params{gen_info} || '';
+    my $stat     = $params{'stat'}   || '';
 
-    my $filter;
+    $gen_info || $stat || confess "Required gen_info or stat parameter!";
 
-    $params{'limits'} ||= '';
-    $params{'permissions'} ||= '';
-    $params{'new_data'} ||= '';
-
-    my $limits_block = ref $params{'limits'} eq 'HASH' &&  %{$params{'limits'}}?
-        generate_settings_block('limit' ,%{ $params{'limits'} }) : '';  
- 
-    my $permissions_block = ref $params{'permissions'} eq 'HASH' && %{$params{'limits'}} ?
-        generate_settings_block( 'permission', %{ $params{'permissions'} }) : '';   
-
-    my $gen_info_block = ref $params{'new_data'} eq 'HASH' && %{$params{'new_data'}} ?
-        generate_info_block('gen_info', %{ $params{'new_data'} }) : '';
-
-    if ($params{'all'}) {
-        $filter =  create_filter(login_field_name => 'login', all => 1);  # warning: modify all !!
-    } elsif ($params{'id'} || $params{'login'}) {
-        $filter = create_filter(login_field_name => 'login', %params);
-    } else {
-        $filter = '';
-    }
-
-    if ($filter && ($limits_block || $permissions_block || $gen_info_block)) {
-
-        return construct_request_xml( 'client', 'set', $filter, 
-            create_node(
-                'values', $gen_info_block . $limits_block . $permissions_block
-            )
+    return
+        $self->plesk->send(
+            'customer', 'set',
+            {
+                filter  => $filter,
+                dataset => {
+                    gen_info => $gen_info,
+                    'stat'   => $stat,
+                }
+            }
         );
-    } else {
-
-        return '';
-
-    }
-}
-
-
-# SET response handler
-# STATIC
-sub modify_response_parse {
-    my $xml_from_server = shift; 
-
-    return '' unless $xml_from_server;
-
-    return abstract_parser('set', $xml_from_server, ['status']);
 }
 
 =item delete(%params)
@@ -174,39 +114,16 @@ And also one of the following options:
   id    => 123    - account with a given id 
 
 =cut
+sub del {
+    my ($self, $filter) = @_;
 
-# Delete element
-# STATIC( %args )
-# login => 'userlogin' or id => 12312 or all => 1
-sub delete {
-    my %params = @_;
-
-    my $filter = '';
-
-    if ($params{'all'}) {
-        $filter =  create_filter(login_field_name => 'login', all => 1); # warning: delete all !!
-    } elsif ($params{'id'} || $params{'login'}) {
-        $filter =  $params{'id'} ?
-            create_filter( login_field_name => 'login', id    => $params{'id'}) :
-            create_filter( login_field_name => 'login', login => $params{'login'});
-    } else {
-        $filter = '';
-    }
-  
-    return $filter ? construct_request_xml('client', 'del', $filter) : '';
+    return 
+        $self->plesk->send(
+            'customer',
+            'del',
+            { filter  => $filter || '' }
+        );
 }
-
-
-# DEL response handler
-# STATIC
-sub delete_response_parse {
-    my $xml_from_server = shift;
-
-    return '' unless $xml_from_server;
-
-    return abstract_parser('del', $xml_from_server, ['status']);
-}
-
 
 =item get(%params)
 
@@ -223,184 +140,15 @@ One of the following options:
 =back
 
 =cut
-
-
-# Get all element data
-# STATIC( %args )
-# login => 'userlogin', id => 12312, all => 1
 sub get {
-    my %params = (permissions => 0, limits => 0, stat => 0, @_);
+    my ( $self, $filter ) = @_;
 
-    my $filter = '';
-
-    if ($params{'all'}) {
-        $filter =  create_filter(login_field_name => 'login', all => 1); # warning: get all !!
-    } elsif ($params{'id'} || $params{'login'}) {
-        $filter = $params{'id'} ?
-            create_filter( login_field_name => 'login', id    => $params{'id'}) :
-            create_filter( login_field_name => 'login', login => $params{'login'});
-    } else {
-        $filter = '';
-    } 
-
-    my $addition_blocks = 
-       ( $params{stat}        ? create_node('stat')        : '' ) .
-       ( $params{permissions} ? create_node('permissions') : '' ) .
-       ( $params{limits}      ? create_node('limits')      : '' ) .
-       ( $params{ippool}      ? create_node('ippool')      : '' );
-
-    # don`t use limits, preferences sequence!!!!
-    # only preferences, limits! Probably Plesk bug.
-    return construct_request_xml('client', 'get', $filter, 
-        create_node ('dataset', create_node('gen_info') . $addition_blocks)
-    );
+    return 
+        $self->plesk->send(
+            'customer',
+            'get', 
+            { filter => $filter || ''}
+        );
 }
-
-
-# GET response handler 
-# STATIC
-sub get_response_parse {
-    my $xml_from_server = shift;
-
-    return '' unless $xml_from_server;
-    
-    my $parse_result = abstract_parser('get', $xml_from_server, ['status']);
-    return '' unless $parse_result;
-        
-    if (ref $parse_result eq 'HASH') {
-        if ($parse_result->{'data'}) {
-            
-            my $limits = ($parse_result->{'data'} =~ m#<limits>(.*?)</limits>#sio)[0];
-            
-            if ($limits) {
-                $limits = xml_extract_values( transform_block($limits, 'limit') );
-                $parse_result->{'limits'} = $limits;
-            }
-
-
-            my $stat = ($parse_result->{'data'} =~ m#<stat>(.*?)</stat>#sio)[0];
-           
-            if ($stat) {
-                $stat = xml_extract_values( transform_block($stat, 'stat') );
-                $parse_result->{'stat'} = $stat;
-            }
- 
-            my $ippool = ($parse_result->{'data'} =~ m#<ippool>(.*?)</ippool>#sio)[0];
-             
-            if ($ippool) {
-               $ippool = xml_extract_values( transform_block($ippool, 'ippool') );
-               $parse_result->{'ippool'} = $ippool;
-            }
-
-            my $permissions = ($parse_result->{'data'} =~ m#<permissions>(.*?)</permissions>#sio)[0];
-
-            if ($permissions){
-                $permissions = xml_extract_values( transform_block($permissions, 'permission') );
-                $parse_result->{'permissions'} = $permissions;
-            }
-
-            $parse_result->{'data'} = xml_extract_values(
-                    ( $parse_result->{'data'} 
-                        =~ m#<gen_info>(.*?)</gen_info>#sio)[0]);
-
-            return '' unless $parse_result->{'data'};
-        } 
-    } elsif (ref $parse_result eq 'ARRAY'){ # multiple blocks
-        foreach my $element (@$parse_result) {
-            my $limits = ($element->{'data'} =~ m#<limits>(.*?)</limits>#sio)[0];
-             
-            if ($limits) {
-                $limits = xml_extract_values( transform_block($limits, 'limit') );
-                $element->{'limits'} = $limits;
-            }
- 
-            my $stat = ($element->{'data'} =~ m#<stat>(.*?)</stat>#sio)[0];
-            
-            if ($stat) {
-                $stat = xml_extract_values( transform_block($stat, 'stat') );
-                $element->{'stat'} = $stat;
-            }
-
-            my $ippool = ($element->{'data'} =~ m#<ippool>(.*?)</ippool>#sio)[0];
-            
-            if ($ippool) {
-                $ippool = xml_extract_values( transform_block($ippool, 'ippool') );
-                $element->{'ippool'} = $ippool;
-            }
-
-            my $permissions = ($element->{'data'} =~ m#<permissions>(.*?)</permissions>#sio)[0];
-
-            if ($permissions){
-                $permissions = xml_extract_values( transform_block($permissions, 'permission') );
-                $element->{'permissions'} = $permissions;
-            }
-
-
-            if ($element->{'data'}) {
-                $element->{'data'} = xml_extract_values(( $element->{'data'} 
-                    =~ m#<gen_info>(.*?)</gen_info>#sio )[0]);
-
-                return '' unless $element->{'data'};
-            } 
-        }
-    } else {
-        return ''; 
-    }
-
-    return $parse_result;
-}
-
-
-sub transform_block {
-    my ($block, $sub_block_name) = @_; 
-
-    for ($block) {
-        s#<name>(.*?)</name><value>(.*?)</value>#<$1>$2</$1>#sgi;
-        s#</?$sub_block_name>##sgi;
-    }
-
-    return $block;
-}
-
-# Input data control for create sub
-# STATIC
-sub client_add_gen_info_check {
-    my %params = @_;
-
-    foreach my $key (keys %template_data) { 
-
-        if ($_ = $params{$key}) {
-            return '' unless ( 
-                                length $_ >= $template_data{$key}->[1]  && 
-                                length $_ <= $template_data{$key}->[2] 
-            );
-        } else {                                    # value not defined
-            return '' if $template_data{$key}->[0]; # if required => error 
-        }
-
-    }   
-    return 1; # all ok
-}
-
 
 1;
-__END__
-=head1 SEE ALSO
-
-Blank.
-
-=head1 AUTHOR
-
-Odintsov Pavel E<lt>nrg[at]cpan.orgE<gt>
-Nikolay Shulyakovskiy E<lt>shulyakovskiy[at]rambler.ruE<gt>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) 2008 by NRG
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.8 or,
-at your option, any later version of Perl 5 you may have available.
-
-
-=cut

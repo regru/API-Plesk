@@ -41,9 +41,10 @@ is($api->render_xml({
             }}
         ]
     }
-}), '<webspace><add><gen_setup><qq>ddd</qq><name>sample.com</name><ddd><lll>1234567</lll></ddd></gen_setup><hosting><value>erty</value><name>123</name></hosting></add></webspace>', 'render_xml');
+}), '<?xml version="1.0" encoding="UTF-8"?><packet version="1.6.3.0"><webspace><add><gen_setup><qq>ddd</qq><name>sample.com</name><ddd><lll>1234567</lll></ddd></gen_setup><hosting><value>erty</value><name>123</name></hosting></add></webspace></packet>', 'render_xml');
 
 # compoments
 
-isa_ok($api->customers, 'API::Plesk::Customers', 'has_components');
+isa_ok($api->customers, 'API::Plesk::Customers', 'customers');
+
 
