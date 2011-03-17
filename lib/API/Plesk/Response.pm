@@ -4,6 +4,8 @@ package API::Plesk::Response;
 use strict;
 use warnings;
 
+use Data::Dumper;
+
 =head1 NAME
 
 API::Plesk::Response -  Class for processing server answers with errors handling.
@@ -38,12 +40,14 @@ $server_answer - server answer,
 sub new {
     my ( $class, %attrs) = @_;
     $class = ref $class || $class;
-
+    
     my $operator  = $attrs{operator};
     my $operation = $attrs{operation};
+    my $response  = $attrs{response};
     my @results;
     my $is_success = 1;
     
+    # internal API::Plesk error
     if ( $attrs{error} ) {
         @results = ({
             errcode => '',
@@ -52,12 +56,24 @@ sub new {
         });
         $is_success = '';
     }
+    # remote system plesk error
+    elsif ( exists $response->{packet}->{'system'} ) {
+        $results[0] = $response->{packet}->{'system'};
+        $is_success = '';
+        $operator   = 'system';
+        $operation  = '';
+    }
     else {
-        for my $dataset ( @{$attrs{response}->{$operator}} ) {
-            my $result = $dataset->{$operation}->{result};
-            $is_success = '' if $result->{status} eq 'error';
-            push @results, $result;
+
+        $response = $response->{packet}->{$operator};
+
+        for my $operations ( @{$response->{$operation}} ) {
+            for my $result ( @{$operations->{result}} ) {
+                $is_success = '' if $result->{status} eq 'error';
+                push @results, $result;
+            }
         }
+
     }
     
     my $self = {
@@ -116,8 +132,16 @@ Return answer response if $instance->is_success is true.
 # Get data from response
 # INSTANCE
 sub data {
-    my ( $self, $no ) = @_;
-    return $self->is_success ? $self->{result}->[$no || 0]->{data} : undef;
+    my ( $self ) = @_;
+    return unless $self->is_success;
+    unless ( $self->{data} ) {
+        my @data;
+        for ( @{$self->{result}} ) {
+            push @data, $_->{data};
+        }
+        $self->{data} = \@data;
+    }
+    return @{$self->{data}} == 1 ? $self->{data}->[0] : $self->{data};
 }
 
 sub result { 

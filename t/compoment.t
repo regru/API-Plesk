@@ -9,7 +9,7 @@ use lib 't';
 use TestData;
 
 BEGIN {
-    plan tests => 2;
+    plan tests => 5;
 }
 
 BEGIN {
@@ -20,19 +20,22 @@ my $c = API::Plesk::Component->new(
     plesk => API::Plesk->new(%TestData::plesk_valid_params)
 );
 
-is_deeply( 
-    $c->make_request_data(
-        'customer', 'add',
-        { test => '123'},
-        { test => '123'}
-    ),
-    { customer => [
-        { add => {
-            test => '123'
-        }},
-        { add => {
-            test => '123'
-        }},
-    ]}, 'make_request_data'
-);
-    
+eval {
+    $c->check_required_params({ test => 123}, qw(test));
+};
+ok(!$@);
+
+eval {
+    $c->check_required_params({ test => 123, test2 => 123}, [qw(test ddd)]);
+};
+ok(!$@);
+
+eval {
+    $c->check_required_params({ test => 123}, qw(qqq));
+};
+like($@, qr/Required field qqq!/);
+
+eval {
+    $c->check_required_params({ test => 123}, [qw(qqq ff)]);
+};
+like($@, qr/Required any of this fields: qqq, ff!/);
