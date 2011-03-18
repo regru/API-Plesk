@@ -41,4 +41,55 @@ sub sort_params {
     return \@sorted;
 }
 
+sub check_hosting {
+    my ( $self, $params, $required ) = @_;
+
+    unless ( $params->{hosting} ) {
+        confess "Required hosting!" if $required;
+        return;
+    }
+
+    my $hosting = $params->{hosting};
+    my $type = delete $hosting->{type};
+    my $ip = delete $hosting->{ip_address};
+    
+    confess "Required ip_address" unless $ip;
+    
+    if ( $type eq 'vrt_hst' ) {
+
+        $self->check_required_params($hosting, qw(ftp_login ftp_passwd));
+
+        my @properties;
+        for my $key ( keys %$hosting ) {
+            push @properties, { property => [
+                {name => $key}, 
+                {value => $hosting->{$key}} 
+            ]};
+            delete $hosting->{$key};
+        }
+        push @properties, { ip_address => $ip };
+        $hosting->{$type} = @properties ? \@properties : '';
+
+        return;
+    }
+
+    elsif ( $type eq 'std_fwd' or $type eq 'frm_fwd' ) {
+        
+        confess "Required dest_url field!" unless $hosting->{dest_url};
+        
+        $hosting->{$type} = {
+            dest_url => delete $hosting->{dest_url},
+            ip_address => $ip,
+        };
+
+        return;
+    }
+    elsif ( $type eq 'none' ) {
+        $hosting->{$type} = '';
+        return;
+    }
+
+    confess "Unknown hosting type!";
+}
+
 1;

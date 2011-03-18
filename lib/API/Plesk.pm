@@ -17,8 +17,9 @@ our $VERSION = '2.00';
 
 our %COMPONENTS = (
     'new' => [
-        { class => 'Customers', alias => 'customers' },
-        { class => 'Webspaces', alias => 'webspaces' },
+        { class => 'Customer', alias => 'customer' },
+        { class => 'Webspace', alias => 'webspace' },
+        { class => 'Site', alias => 'site' },
     ],
     'old' => [
         { class => 'Accounts', alias => 'Accounts' },
@@ -71,7 +72,7 @@ sub send {
     warn "RESPONSE $operator => $operation => $error\n$response" if $self->{debug};
 
     unless ( $error ) {
-        $response = xml2hash $response, array => [$operation, 'result'];
+        $response = xml2hash $response, array => [$operation, 'result', 'property'];
     }    
 
     return API::Plesk::Response->new(
@@ -85,6 +86,9 @@ sub send {
 # Send xml request to url
 sub xml_http_req {
     my ($self, $xml) = @_;
+
+    # HTTP::Request undestends only bytes
+    utf8::encode($xml) if utf8::is_utf8($xml);
 
     my $ua = new LWP::UserAgent( parse_head => 0 );
     my $req = new HTTP::Request POST => $self->{url};

@@ -1,5 +1,5 @@
 
-package API::Plesk::Customers;
+package API::Plesk::Customer;
 
 use strict;
 use warnings;

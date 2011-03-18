@@ -1,10 +1,11 @@
 
-package API::Plesk::Webspaces;
+package API::Plesk::Webspace;
 
 use strict;
 use warnings;
 
 use Carp;
+use Data::Dumper;
 
 use base 'API::Plesk::Component';
 
@@ -23,12 +24,14 @@ my @gen_setup_fields = qw(
 
 sub add {
     my ( $self, %params ) = @_;
-    my $gen_info = $params{gen_setup} || confess "Required gen_setup parameter!";
+    my $gen_setup = $params{gen_setup} || confess "Required gen_setup parameter!";
+
+    $self->check_hosting(\%params);
 
     $self->check_required_params(\%params, [qw(plan-id plan-name plan-guid plan-external-id)]);
-    $self->check_required_params($gen_info, qw(pname login passwd));
+    $self->check_required_params($gen_setup, qw(name ip_address));
 
-    $params{gen_info} = $self->sort_gen_info($params{gen_info});
+    $params{gen_setup} = $self->sort_params($gen_setup, @gen_setup_fields);
 
     return 
         $self->plesk->send(
@@ -39,9 +42,12 @@ sub add {
 
 sub get {
     my ($self, %filter) = @_;
-
-    my $dataset = delete $filter{dataset} || ['gen_info'];
-       $dataset = { map { ( $_ => '' ) } @$dataset };
+    my $dataset = {gen_info => ''};
+    
+    if ( my $add = delete $filter{dataset} ) {
+        $dataset = { map { ( $_ => '' ) } ref $add ? @$add : ($add) };
+        $dataset->{gen_info} = '';
+    }
 
     return 
         $self->plesk->send(
@@ -56,6 +62,8 @@ sub get {
 sub set {
     my ( $self, %params ) = @_;
     my $filter = delete $params{filter} || '';
+    
+    $self->check_hosting(\%params);
 
     return
         $self->plesk->send(
@@ -76,5 +84,22 @@ sub del {
             { filter  => @_ > 2 ? \%filter : '' }
         );
 }
+
+sub add_plan_item {
+    my ( $self, %params ) = @_;
+    my $filter = delete $params{filter} || '';
+
+    my $name = $params{name} || confess "Required name field!";    
+
+    return
+        $self->plesk->send(
+            'webspace', 'add-plan-item',
+            {
+                filter      => $filter,
+                'plan-item' => { name => $name }
+            }
+        );
+}
+
 
 1;
