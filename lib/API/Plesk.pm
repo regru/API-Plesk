@@ -19,9 +19,11 @@ our $VERSION = '2.00';
 # can support old interface of API::Plesk
 init_components(
     # new
-    customer => [['1.6.3.0', 'Customer']],
-    webspace => [['1.6.3.0', 'Webspace']],
-    site     => [['1.6.3.0', 'Site']],
+    customer           => [['1.6.3.0', 'Customer']],
+    webspace           => [['1.6.3.0', 'Webspace']],
+    site               => [['1.6.3.0', 'Site']],
+    service_plan       => [['1.6.3.0', 'ServicePlan']],
+    service_plan_addon => [['1.6.3.0', 'ServicePlanAddon']],
    
     # old 
     Accounts => [['1.5.0.0', 'Accounts']],
