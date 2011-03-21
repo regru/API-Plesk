@@ -15,15 +15,17 @@ use API::Plesk::Response;
 
 our $VERSION = '2.00';
 
-our %COMPONENTS = (
-    'new' => [
-        { class => 'Customer', alias => 'customer' },
-        { class => 'Webspace', alias => 'webspace' },
-        { class => 'Site', alias => 'site' },
-    ],
-    'old' => [
-        { class => 'Accounts', alias => 'Accounts' },
-    ]
+# creates accessors to components
+# can support old interface of API::Plesk
+init_components(
+    # new
+    customer => [['1.6.3.0', 'Customer']],
+    webspace => [['1.6.3.0', 'Webspace']],
+    site     => [['1.6.3.0', 'Site']],
+   
+    # old 
+    Accounts => [['1.5.0.0', 'Accounts']],
+    Domains  => [['1.5.0.0', 'Domains']],
 );
 
 # constructor
@@ -35,7 +37,7 @@ sub new {
         username    => '',
         password    => '',
         url         => '',
-        api_version => '1.6.3.0',
+        api_version => '1.6.3.1',
         debug       => 0,
         timeout     => 30,
         (@_)
@@ -45,13 +47,6 @@ sub new {
     confess "Required password!" unless $self->{password};
     confess "Required url!"      unless $self->{url};
 
-    # add accessors to components
-    my $components = $self->{components} ||
-        version->parse($self->{api_version}) < version->parse('1.6.3.0') ?
-        $COMPONENTS{'old'} : $COMPONENTS{'new'};
-
-    $class->add_component(%$_) for @$components;
- 
     return bless $self, $class;
 }
 
@@ -164,40 +159,58 @@ sub _render_xml {
     $xml; 
 }
 
-# creates accessors to compoment
-sub add_component {
-    my ( $self, %params ) = @_;
-    $self = ref $self || $self;
 
-    my $class = $params{class};
-    my $alias = $params{alias};
-    
-    my $pkg = "$self\::$class";
+# initialize components
+sub init_components {
+    my ( %c ) = @_;
+    my $caller = caller;
 
-    return if $self->can($alias);
-    
-    my $sub = sub {
-        my( $self ) = @_;
-        $self->{"_$alias"} ||= $self->load_component($pkg);
-        return $self->{"_$alias"};
-    };
-    
-    no strict 'refs';
+    for my $alias (  keys %c ) {
 
-    *{"$self\::$alias"} = $sub;
+        my $classes = $c{$alias};
+
+        my $sub = sub {
+            my( $self ) = @_;
+            $self->{"_$alias"} ||= $self->load_component($classes);
+            return $self->{"_$alias"} || confess "Not implemented!";
+        };
+        
+        no strict 'refs';
+ 
+        *{"$caller\::$alias"} = $sub;
+
+        
+    }
+
 }
 
 # loads component package and creates object
 sub load_component {
-    my ( $self, $pkg ) = @_;
-    my $module = "$pkg.pm";
-    $module =~ s/::/\//g;
-    local $@;
-    eval { require $module };
-    if ( $@ ) {
-        confess "Failed to load $pkg: $@";
+    my ( $self, $classes ) = @_;
+    my $version = version->parse($self->{api_version});
+
+    for my $item ( @$classes ) {
+        
+        # select compitable version of component
+        if ( $version >= $item->[0] ) {
+
+            my $pkg = ref($self) . '::' . $item->[1];
+
+            my $module = "$pkg.pm";
+               $module =~ s/::/\//g;
+
+            local $@;
+            eval { require $module };
+            if ( $@ ) {
+                confess "Failed to load $pkg: $@";
+            }
+
+            return $pkg->new(plesk => $self);
+
+        }
+
     }
-    return $pkg->new(plesk => $self);
+
 }
 
 1;

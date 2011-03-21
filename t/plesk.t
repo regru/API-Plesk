@@ -45,6 +45,33 @@ is($api->render_xml({
 
 # compoments
 
-isa_ok($api->customers, 'API::Plesk::Customers', 'customers');
+$api = API::Plesk->new(
+    api_version   => '1.6.3.0',
+    username      => 'admin',
+    password      => 'qwerty',
+    url           => 'https://12.34.56.78',
+);
+my %pkgs = (
+    customer => 'API::Plesk::Customer',
+    webspace => 'API::Plesk::Webspace',
+);
+for my $accessor ( keys %pkgs ) {
+    isa_ok($api->$accessor(), $pkgs{$accessor}, "$accessor component");
+}
 
+=head
+$api = API::Plesk->new(
+    api_version   => '1.6.2.0',
+    username      => 'admin',
+    password      => 'qwerty',
+    url           => 'https://12.34.56.78',
+);
+my %pkgs = (
+    Accounts => 'API::Plesk::Accounts',
+    Domains  => 'API::Plesk::Domains',
+);
+for my $accessor ( keys %pkgs ) {
+    isa_ok($api->$accessor(), $pkgs{$accessor}, "$accessor component");
+}
+=cut
 
