@@ -83,7 +83,9 @@ sub send {
     );
 }
 
-# Send xml request to url
+sub bulk_send { confess "Not implemented!" }
+
+# Send xml request to plesk api
 sub xml_http_req {
     my ($self, $xml) = @_;
 

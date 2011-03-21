@@ -27,59 +27,61 @@ my @gen_info_fields = qw(
 
 sub add {
     my ( $self, %params ) = @_;
-    my $gen_info = $params{gen_info} || confess "Required gen_info parameter!";
+    my $bulk_send = delete $params{bulk_send};
+    my $gen_info  = $params{gen_info} || confess "Required gen_info parameter!";
 
     $self->check_required_params($gen_info, qw(pname login passwd));
+    
+    my $data = {
+        gen_info => $self->sort_params($params{gen_info}, @gen_info_fields)
+    };
 
-    return 
-        $self->plesk->send(
-            'customer', 'add',
-            {gen_info => $self->sort_params($params{gen_info}, @gen_info_fields)}
-        );
+    return $bulk_send ? $data : 
+        $self->plesk->send('customer', 'add', $data);
 }
 
 sub get {
     my ($self, %filter) = @_;
+    my $bulk_send = delete $filter{bulk_send};
 
-    return 
-        $self->plesk->send(
-            'customer',
-            'get', 
-            { 
-                filter => @_ > 2 ? \%filter : '',
-                dataset => [ {gen_info => ''}, {stat => ''} ]
-            }
-        );
+    my $data = { 
+        filter => @_ > 2 ? \%filter : '',
+        dataset => [ {gen_info => ''}, {stat => ''} ]
+    };
+
+    return $bulk_send ? $data : 
+        $self->plesk->send('customer', 'get', $data);
 }
 
 sub set {
     my ( $self, %params ) = @_;
-    my $filter   = $params{filter}   || '';
-    my $gen_info = $params{gen_info} || '';
+    my $bulk_send = delete $params{bulk_send};
+    my $filter    = $params{filter}   || '';
+    my $gen_info  = $params{gen_info} || '';
 
     $gen_info || confess "Required gen_info or stat parameter!";
 
-    return
-        $self->plesk->send(
-            'customer', 'set',
-            {
-                filter  => $filter,
-                values => {
-                    gen_info => $gen_info,
-                }
-            }
-        );
+    my $data = {
+        filter  => $filter,
+        values => {
+            gen_info => $gen_info,
+        }
+    };
+
+    return $bulk_send ? $data :
+        $self->plesk->send('customer', 'set', $data);
 }
 
 sub del {
     my ($self, %filter) = @_;
+    my $bulk_send = delete $filter{bulk_send};
 
-    return 
-        $self->plesk->send(
-            'customer',
-            'del',
-            { filter  => @_ > 2 ? \%filter : '' }
-        );
+    my $data = {
+        filter  => @_ > 2 ? \%filter : ''
+    };
+
+    return $bulk_send ? $data : 
+        $self->plesk->send('customer', 'del', $data);
 }
 
 1;

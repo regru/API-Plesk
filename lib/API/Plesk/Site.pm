@@ -8,6 +8,7 @@ use Carp;
 
 use base 'API::Plesk::Component';
 
+#TODO
 sub add {
     my ( $self, %params ) = @_;
     my $gen_setup = $params{gen_setup} || confess "Required gen_setup parameter!";
@@ -25,6 +26,7 @@ sub add {
         );
 }
 
+#TODO
 sub get {
     my ($self, %filter) = @_;
 
@@ -41,6 +43,7 @@ sub get {
         );
 }
 
+#TODO
 sub set {
     my ( $self, %params ) = @_;
     my $filter = delete $params{filter} || '';
@@ -55,6 +58,7 @@ sub set {
         );
 }
 
+#TODO
 sub del {
     my ($self, %filter) = @_;
 
@@ -67,11 +71,17 @@ sub del {
 
 sub get_physical_hosting_descriptor {
     my ( $self, %filter ) = @_;
+    my $bulk_send = delete $filter{bulk_send};
     
-    return 
+    my $data = {
+        filter  => @_ > 2 ? \%filter : ''
+    };
+
+    return $bulk_send ? $data :
         $self->plesk->send(
-            'site', 'get-physical-hosting-descriptor',
-            { filter  => @_ > 2 ? \%filter : '' }
+            'site', 
+            'get-physical-hosting-descriptor', 
+            $data
         );
 }
 

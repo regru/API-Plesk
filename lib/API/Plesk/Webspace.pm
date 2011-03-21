@@ -24,6 +24,7 @@ my @gen_setup_fields = qw(
 
 sub add {
     my ( $self, %params ) = @_;
+    my $bulk_send = delete $params{bulk_send};
     my $gen_setup = $params{gen_setup} || confess "Required gen_setup parameter!";
 
     $self->check_hosting(\%params);
@@ -33,72 +34,70 @@ sub add {
 
     $params{gen_setup} = $self->sort_params($gen_setup, @gen_setup_fields);
 
-    return 
-        $self->plesk->send(
-            'webspace', 'add',
-            \%params
-        );
+    return $bulk_send ? \%params :
+        $self->plesk->send('webspace', 'add', \%params);
 }
 
 sub get {
     my ($self, %filter) = @_;
-    my $dataset = {gen_info => ''};
+    my $bulk_send = delete $filter{bulk_send};
+    my $dataset   = {gen_info => ''};
     
     if ( my $add = delete $filter{dataset} ) {
         $dataset = { map { ( $_ => '' ) } ref $add ? @$add : ($add) };
         $dataset->{gen_info} = '';
     }
 
-    return 
-        $self->plesk->send(
-            'webspace', 'get', 
-            { 
-                filter  => @_ > 2 ? \%filter : '',
-                dataset => $dataset
-            }
-        );
+    my $data = { 
+        filter  => @_ > 2 ? \%filter : '',
+        dataset => $dataset,
+    };
+
+    return $bulk_send ? $data : 
+        $self->plesk->send('webspace', 'get', $data);
 }
 
 sub set {
     my ( $self, %params ) = @_;
-    my $filter = delete $params{filter} || '';
+    my $bulk_send = delete $params{bulk_send}; 
+    my $filter    = delete $params{filter} || '';
     
     $self->check_hosting(\%params);
 
-    return
-        $self->plesk->send(
-            'webspace', 'set',
-            {
-                filter  => $filter,
-                values  => \%params
-            }
-        );
+    my $data = {
+        filter  => $filter,
+        values  => \%params,
+    };
+
+    return $bulk_send ? $data : 
+        $self->plesk->send('webspace', 'set', $data);
 }
 
 sub del {
     my ($self, %filter) = @_;
+    my $bulk_send = delete $filter{bulk_send}; 
 
-    return 
-        $self->plesk->send(
-            'webspace', 'del',
-            { filter  => @_ > 2 ? \%filter : '' }
-        );
+    my $data = {
+        filter  => @_ > 2 ? \%filter : ''
+    };
+
+    return $bulk_send ? $data : 
+        $self->plesk->send('webspace', 'del', $data);
 }
 
 sub add_plan_item {
     my ( $self, %params ) = @_;
-    my $filter = delete $params{filter} || '';
+    my $bulk_send = delete $params{bulk_send}; 
+    my $filter    = delete $params{filter} || '';
 
     my $name = $params{name} || confess "Required name field!";    
+    my $data = {
+        filter      => $filter,
+        'plan-item' => { name => $name },
+    };
 
-    return
-        $self->plesk->send(
-            'webspace', 'add-plan-item',
-            {
-                filter      => $filter,
-                'plan-item' => { name => $name }
-            }
-        );
+    return $bulk_send ? $data : 
+        $self->plesk->send('webspace', 'add-plan-item', $data);
 }
 
 

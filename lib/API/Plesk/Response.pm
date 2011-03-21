@@ -44,40 +44,31 @@ sub new {
     my $operator  = $attrs{operator};
     my $operation = $attrs{operation};
     my $response  = $attrs{response};
-    my @results;
+    my $result;
     my $is_success = 1;
     
     # internal API::Plesk error
     if ( $attrs{error} ) {
-        @results = ({
+        $result = {
             errcode => '',
             errtext => $attrs{error},
             status  => 'error'
-        });
+        };
         $is_success = '';
     }
     # remote system plesk error
     elsif ( exists $response->{packet}->{'system'} ) {
-        $results[0] = $response->{packet}->{'system'};
+        $result = $response->{packet}->{'system'};
         $is_success = '';
         $operator   = 'system';
         $operation  = '';
     }
     else {
-
-        $response = $response->{packet}->{$operator};
-
-        for my $operations ( @{$response->{$operation}} ) {
-            for my $result ( @{$operations->{result}} ) {
-                $is_success = '' if $result->{status} eq 'error';
-                push @results, $result;
-            }
-        }
-
+        $result = $response->{packet}->{$operator}->{$operation}->[0]->{result}->[0];
     }
     
     my $self = {
-        result     => \@results,
+        result     => $result,
         operator   => $operator,
         operation  => $operation,
         is_success => $is_success,
@@ -96,18 +87,9 @@ Return $self->get_data->[0]->{id}, if no errors and server answer consists of on
 
 # Get executed operation ID
 # INSTANCE
-sub id {
-    my ( $self ) = @_;
-    return $self->is_success && @{$self->{result}} == 1 ? 
-        $self->result->{id} : '';
-}
+sub id { $_[0]->{result}->{id} }
 
-sub guid {
-    my ( $self ) = @_;
-    return $self->is_success && @{$self->{result}} == 1 ? 
-        $self->result->{guid} : '';
-}
-
+sub guid { $_[0]->{result}->{guid} }
 
 =item is_success
 
@@ -134,20 +116,13 @@ Return answer response if $instance->is_success is true.
 sub data {
     my ( $self ) = @_;
     return unless $self->is_success;
-    unless ( $self->{data} ) {
-        my @data;
-        for ( @{$self->{result}} ) {
-            push @data, $_->{data};
-        }
-        $self->{data} = \@data;
-    }
-    return @{$self->{data}} == 1 ? $self->{data}->[0] : $self->{data};
+    return $self->{result}->{data};
 }
 
 sub result { 
     my ( $self ) = @_;
     return undef unless $self->is_success;
-    return @{$self->{result}} == 1 ? $self->{result}->[0] : $self->{result};
+    return $self->{result};
 }
 
 =item error_codes
@@ -158,13 +133,7 @@ Get all error codes from response
 
 # Get all error codes from message as arref
 # INSTANCE
-sub error_codes {
-    my ( $self ) = @_;
-
-    my @codes = map { ($_->{errcode}) || () } @{$self->{result}};
-
-    return wantarray ? @codes : join ", ", @codes;
-}
+sub error_code { $_[0]->{result}->{errcode}; }
 
 =item get_error_string
 
@@ -173,24 +142,12 @@ Return joined by ', ' error codes.
 =back
 
 =cut
-sub error_texts {
+sub error_text { $_[0]->{result}->{errtext}; }
+
+sub error {
     my ( $self ) = @_;
-
-    my @texts = map { ($_->{errtext}) || () } @{$self->{result}};
-
-    return wantarray ? @texts : join ", ", @texts;
-}
-
-sub errors {
-    my ( $self ) = @_;
-
-    my @errors = map { 
-        $_->{errcode} || $_->{errtext} ? 
-            ("$_->{errcode}: $_->{errtext}") :
-            () 
-        } @{$self->{result}};
-
-    return wantarray ? @errors : join ", ", @errors;
+    $self->error_code || $self->error_text ? 
+        $self->error_code . ': ' . $self->error_text : undef;
 }
 
 1;
