@@ -24,6 +24,7 @@ init_components(
     site               => [['1.6.3.0', 'Site']],
     service_plan       => [['1.6.3.0', 'ServicePlan']],
     service_plan_addon => [['1.6.3.0', 'ServicePlanAddon']],
+    database           => [['1.6.3.0', 'Database']],
    
     # old 
     Accounts => [['1.5.0.0', 'Accounts']],

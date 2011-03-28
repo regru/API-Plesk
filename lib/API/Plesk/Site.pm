@@ -11,62 +11,65 @@ use base 'API::Plesk::Component';
 #TODO
 sub add {
     my ( $self, %params ) = @_;
+    my $bulk_send = delete $params{bulk_send};
     my $gen_setup = $params{gen_setup} || confess "Required gen_setup parameter!";
 
+    $self->check_required_params(
+        $gen_setup,
+        'name',
+        [qw(webspace-name webspace-id webspace-guid)]
+    );
     $self->check_hosting(\%params);
 
-    $self->check_required_params(\%params, [qw(plan-id plan-name plan-guid plan-external-id)]);
-    $self->check_required_params($gen_setup, qw(name ip_address));
-
-
-    return 
-        $self->plesk->send(
-            'webspace', 'add',
-            \%params
-        );
+    return $bulk_send ? \%params : 
+        $self->plesk->send('site', 'add', \%params);
 }
 
-#TODO
 sub get {
     my ($self, %filter) = @_;
+    my $bulk_send = delete $filter{bulk_send};
+    my $dataset   = {gen_info => ''};
+    
+    if ( my $add = delete $filter{dataset} ) {
+        $dataset = { map { ( $_ => '' ) } ref $add ? @$add : ($add) };
+        $dataset->{gen_info} = '';
+    }
 
-    my $dataset = delete $filter{dataset} || ['gen_info'];
-       $dataset = { map { ( $_ => '' ) } @$dataset };
+    my $data = { 
+        filter  => @_ > 2 ? \%filter : '',
+        dataset => $dataset,
+    };
 
-    return 
-        $self->plesk->send(
-            'webspace', 'get', 
-            { 
-                filter  => @_ > 2 ? \%filter : '',
-                dataset => $dataset
-            }
-        );
+    return $bulk_send ? $data : 
+        $self->plesk->send('site', 'get', $data);
 }
 
-#TODO
 sub set {
     my ( $self, %params ) = @_;
-    my $filter = delete $params{filter} || '';
+    my $bulk_send = delete $params{bulk_send}; 
+    my $filter    = delete $params{filter} || '';
+    
+    $self->check_hosting(\%params);
 
-    return
-        $self->plesk->send(
-            'webspace', 'set',
-            {
-                filter  => $filter,
-                values  => \%params
-            }
-        );
+    my $data = {
+        filter  => $filter,
+        values  => \%params,
+    };
+
+    return $bulk_send ? $data : 
+        $self->plesk->send('site', 'set', $data);
 }
 
-#TODO
 sub del {
     my ($self, %filter) = @_;
+    my $bulk_send = delete $filter{bulk_send}; 
 
-    return 
-        $self->plesk->send(
-            'webspace', 'del',
-            { filter  => @_ > 2 ? \%filter : '' }
-        );
+    my $data = {
+        filter  => @_ > 2 ? \%filter : ''
+    };
+
+    return $bulk_send ? $data : 
+        $self->plesk->send('site', 'del', $data);
 }
 
 sub get_physical_hosting_descriptor {

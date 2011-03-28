@@ -150,6 +150,11 @@ sub error {
         $self->error_code . ': ' . $self->error_text : undef;
 }
 
+sub is_connection_error {
+    my ( $self ) = @_;
+    return $self->error_text eq 'connection error' ? 1 : 0;
+}
+
 1;
 
 __END__
