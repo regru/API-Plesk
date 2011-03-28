@@ -46,7 +46,7 @@ sub new {
     my $response  = $attrs{response};
     my $result;
     my $is_success = 1;
-    
+
     # internal API::Plesk error
     if ( $attrs{error} ) {
         $result = {
@@ -65,6 +65,7 @@ sub new {
     }
     else {
         $result = $response->{packet}->{$operator}->{$operation}->[0]->{result}->[0];
+        $is_success = '' if $result->{status} eq 'error';
     }
     
     my $self = {
