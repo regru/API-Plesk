@@ -35,9 +35,11 @@ sub add_db_user {
     my $bulk_send = delete $params{bulk_send};
 
     $self->check_required_params(\%params, qw(db-id login password));
-    
-    return $bulk_send ? \%params : 
-        $self->plesk->send('database', 'add-db-user', \%params);
+
+    my $data = $self->sort_params(\%params, qw(db-id login password));
+ 
+    return $bulk_send ? $data : 
+        $self->plesk->send('database', 'add-db-user', $data);
 }
 
 sub del_db_user {

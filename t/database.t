@@ -7,7 +7,7 @@ use Carp;
 use Test::More;
 use Data::Dumper;
 
-use lib 't';
+use lib qw(lib t);
 use TestData;
 
 BEGIN { 
@@ -51,11 +51,11 @@ is_deeply(
         password  => '12345',
         bulk_send => 1
     ),
-    { 
-        'db-id'   => 1,
-        login     => 'test_db_user',
-        password  => '12345',
-    },
+    [ 
+        {'db-id'   => 1},
+        {login     => 'test_db_user'},
+        {password  => '12345'},
+    ],
     'add_db_user'
 );
  is_deeply(
