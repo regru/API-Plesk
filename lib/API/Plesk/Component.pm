@@ -60,7 +60,7 @@ sub check_hosting {
     my $type = delete $hosting->{type};
     my $ip = delete $hosting->{ip_address};
     
-    confess "Required ip_address" unless $ip;
+    #confess "Required ip_address" unless $ip;
     
     if ( $type eq 'vrt_hst' ) {
 
@@ -74,7 +74,7 @@ sub check_hosting {
             ]};
             delete $hosting->{$key};
         }
-        push @properties, { ip_address => $ip };
+        push(@properties, { ip_address => $ip }) if $ip;
         $hosting->{$type} = @properties ? \@properties : '';
 
         return;
@@ -86,8 +86,8 @@ sub check_hosting {
         
         $hosting->{$type} = {
             dest_url => delete $hosting->{dest_url},
-            ip_address => $ip,
         };
+        $hosting->{$type}->{ip_address} = $ip if $ip;
 
         return;
     }

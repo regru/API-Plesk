@@ -48,3 +48,38 @@ is_deeply(
     ]
 );
 
+eval {
+    $c->check_hosting({
+        hosting => {
+            type => 'vrt_hst',
+            ftp_login => 'ert',
+            ftp_passwd => '123',
+            ip_address => '12.34.56.78',
+        }
+    })
+};
+ok(!$@);
+
+eval {
+    $c->check_hosting({
+        hosting => {
+            type => 'vrt_hst',
+            ftp_login => 'ert',
+            ftp_passwd => '123',
+        }
+    })
+};
+ok(!$@);
+
+eval {
+    $c->check_hosting({
+        hosting => {
+            type => 'vrt_ht',
+            ftp_login => 'ert',
+            ftp_passwd => '123',
+        }
+    })
+};
+like($@, qr/Unknown hosting type!/); 
+
+
