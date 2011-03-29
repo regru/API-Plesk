@@ -39,3 +39,12 @@ eval {
     $c->check_required_params({ test => 123}, [qw(qqq ff)]);
 };
 like($@, qr/Required any of this fields: qqq, ff!/);
+
+is_deeply(
+    $c->sort_params({key => 1, key2 => 2, key3 => 3, key4 => 4}, [qw(key3 key2)], 'key'),
+    [
+        {key3 => 3},
+        {key  => 1},
+    ]
+);
+

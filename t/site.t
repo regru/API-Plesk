@@ -33,10 +33,10 @@ is_deeply(
         bulk_send => 1
     ),
     { 
-        gen_setup => {
-            name => 'test.ru',
-            'webspace-name' => 'main.ru',
-        },
+        gen_setup => [
+            {name => 'test.ru'},
+            {'webspace-name' => 'main.ru'},
+        ],
         hosting => {
             std_fwd => {
                 dest_url => 'fwd.ru',

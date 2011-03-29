@@ -34,10 +34,17 @@ sub sort_params {
     my ( $self, $params, @fields ) = @_;
 
     my @sorted;
-    for ( @fields ) {
-        push @sorted, {$_ => $params->{$_}}
-            if exists $params->{$_};
+    for my $key ( @fields ) {
+
+        if ( ref $key ) {
+            ($key) = grep { exists $params->{$_} } @$key 
+        }
+
+        push @sorted, {$key => $params->{$key}}
+            if exists $params->{$key};
+
     }
+
     return \@sorted;
 }
 

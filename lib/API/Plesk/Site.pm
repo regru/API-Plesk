@@ -14,12 +14,15 @@ sub add {
     my $bulk_send = delete $params{bulk_send};
     my $gen_setup = $params{gen_setup} || confess "Required gen_setup parameter!";
 
-    $self->check_required_params(
-        $gen_setup,
+    my @fields = (
         'name',
         [qw(webspace-name webspace-id webspace-guid)]
     );
+
+    $self->check_required_params($gen_setup, @fields);
     $self->check_hosting(\%params);
+
+    $params{gen_setup} = $self->sort_params($gen_setup, @fields);
 
     return $bulk_send ? \%params : 
         $self->plesk->send('site', 'add', \%params);
