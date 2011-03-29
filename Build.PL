@@ -15,6 +15,7 @@ my $build = Module::Build->new(
         'HTTP::Request'   => 0,
         'Carp'            => 0,
         'XML::Fast'       => 0,
+        'version'         => 0,
     },
     build_requires => {
         'Test::More'       => 0,

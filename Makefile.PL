@@ -12,7 +12,8 @@ WriteMakefile
                    'Test::LongString' => 0,
                    'Test::More' => 0,
                    'URI' => 0,
-                   'XML::Fast' => 0
+                   'XML::Fast' => 0,
+                   'version'   => 0,
                  },
   'INSTALLDIRS' => 'site',
   'EXE_FILES' => [],
