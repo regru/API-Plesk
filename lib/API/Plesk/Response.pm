@@ -65,7 +65,7 @@ sub new {
     }
     else {
         $result = $response->{packet}->{$operator}->{$operation}->[0]->{result}->[0];
-        $is_success = '' if $result->{status} eq 'error';
+        $is_success = '' if $result->{status} && $result->{status} eq 'error';
     }
     
     my $self = {

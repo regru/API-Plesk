@@ -8,14 +8,13 @@ use Module::Build;
 my $build = Module::Build->new(
     module_name => 'API::Plesk',
     license     => 'perl',
-    dist_author => 'NRG <pavel.odintsov@googlemail.com>',
+    dist_author => 'Ivan Sokolov <ivsokolov@cpan.org>',
     requires    => {
         'Data::Dumper'    => 0,
         'LWP::UserAgent'  => 0,
-        'Getopt::Long'    => 0,
         'HTTP::Request'   => 0,
         'Carp'            => 0,
-        'URI'             => 0,
+        'XML::Fast'       => 0,
     },
     build_requires => {
         'Test::More'       => 0,

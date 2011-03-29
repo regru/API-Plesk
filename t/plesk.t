@@ -9,7 +9,7 @@ use lib qw(t lib);
 use TestData;
 
 BEGIN {
-    plan tests => 11;
+    plan tests => 7;
 }
 
 BEGIN {
@@ -46,7 +46,7 @@ is($api->render_xml({
 # compoments
 
 $api = API::Plesk->new(
-    api_version   => '1.6.3.0',
+    api_version   => '1.6.3.1',
     username      => 'admin',
     password      => 'qwerty',
     url           => 'https://12.34.56.78',
@@ -58,20 +58,3 @@ my %pkgs = (
 for my $accessor ( keys %pkgs ) {
     isa_ok($api->$accessor(), $pkgs{$accessor}, "$accessor component");
 }
-
-=head
-$api = API::Plesk->new(
-    api_version   => '1.6.2.0',
-    username      => 'admin',
-    password      => 'qwerty',
-    url           => 'https://12.34.56.78',
-);
-my %pkgs = (
-    Accounts => 'API::Plesk::Accounts',
-    Domains  => 'API::Plesk::Domains',
-);
-for my $accessor ( keys %pkgs ) {
-    isa_ok($api->$accessor(), $pkgs{$accessor}, "$accessor component");
-}
-=cut
-

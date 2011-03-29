@@ -11,8 +11,7 @@ use lib 't';
 use TestData;
 
 BEGIN { 
-    plan tests => 15;
-
+    plan tests => 3;
     use_ok('API::Plesk::Customer'); 
 }
 

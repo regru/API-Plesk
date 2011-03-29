@@ -9,10 +9,7 @@ use lib 't';
 use TestData;
 
 BEGIN {
-    plan tests => 5;
-}
-
-BEGIN {
+    plan tests => 9;
     use_ok( 'API::Plesk::Component' );
 }
 

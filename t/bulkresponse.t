@@ -12,11 +12,13 @@ use TestData;
 use XML::Fast;
 
 BEGIN { 
-    plan tests => 15;
+    plan tests => 1;
 
-    use_ok('API::Plesk::Response'); 
+    use_ok('API::Plesk::BulkResponse'); 
 }
 
+=head
+TODO
 isa_ok(
     API::Plesk::Response->new(
         operator  => 'customer',
@@ -149,8 +151,7 @@ is($res->error_codes, '123');
 is($res->error_texts, 'Object not found.');
 is($res->errors, '123: Object not found.');
 
-
-
+=cut
 
 
 

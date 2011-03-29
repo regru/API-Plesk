@@ -13,7 +13,7 @@ use XML::Fast;
 
 use API::Plesk::Response;
 
-our $VERSION = '2.00';
+our $VERSION = '2.00_1';
 
 # creates accessors to components
 # can support old interface of API::Plesk

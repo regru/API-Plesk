@@ -12,7 +12,7 @@ use TestData;
 use XML::Fast;
 
 BEGIN { 
-    plan tests => 10;
+    plan tests => 13;
 
     use_ok('API::Plesk::Response'); 
 }
@@ -52,7 +52,7 @@ is($res->guid, 123456);
 is($res->result->{status}, 'ok');
 is($res->data->{test}, 'qwerty');
 
-my $res = API::Plesk::Response->new(
+$res = API::Plesk::Response->new(
         operator  => 'webspace',
         operation => 'add',
         response  => xml2hash(q|
@@ -63,7 +63,7 @@ my $res = API::Plesk::Response->new(
 ok(!$res->is_success);
 ok(!$res->id);
 ok(!$res->guid);
-is($res->result->{status}, 'error');
+is($res->{result}->{status}, 'error');
 is($res->error_code, '1018');
 is($res->error_text, 'Unable to create hosting on ip 12.34.56.78. Ip address does not exist in client\'s pool');
 
