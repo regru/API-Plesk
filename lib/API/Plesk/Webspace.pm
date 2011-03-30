@@ -108,8 +108,10 @@ sub switch_subscription {
 
     $self->check_required_params(\%params, [qw(plan-guid plan-external-id no-plan)]);
 
-    return $bulk_send ? \%params : 
-        $self->plesk->send('webspace', 'switch-subscription', \%params);
+    my $data = $self->sort_params(\%params, 'filter', [qw(plan-guid plan-external-id no-plan)]);
+
+    return $bulk_send ? $data : 
+        $self->plesk->send('webspace', 'switch-subscription', $data);
 }
 
 1;

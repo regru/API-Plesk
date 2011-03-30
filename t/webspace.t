@@ -21,13 +21,13 @@ isa_ok($api->webspace, 'API::Plesk::Webspace');
 
 is_deeply(
     $api->webspace->switch_subscription(
-        filter => {'owner-name' => 'qwerty'},
+        filter      => {'owner-name' => 'qwerty'},
         'plan-guid' => 'wervqwef',
-        bulk_send => 1
+        bulk_send   => 1
     ),
-    {
-        filter => {'owner-name' => 'qwerty'},
-        'plan-guid' => 'wervqwef',
-    }
+    [
+        {filter      => {'owner-name' => 'qwerty'}},
+        {'plan-guid' => 'wervqwef'},
+    ]
 );
         
