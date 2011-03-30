@@ -100,5 +100,16 @@ sub add_plan_item {
         $self->plesk->send('webspace', 'add-plan-item', $data);
 }
 
+sub switch_subscription {
+    my ($self, %params) = @_;
+    my $bulk_send = delete $filter{bulk_send}; 
+    
+    $params{filter} ||= '';
+
+    $self->check_required_params(\%params, [qw(plan-guid plan-external-id no-plan)]);
+
+    return $bulk_send ? $data : 
+        $self->plesk->send('webspace', 'switch-subscription', $data);
+}
 
 1;

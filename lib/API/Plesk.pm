@@ -228,13 +228,15 @@ API::Plesk - OOP interface to the Plesk XML API (http://www.parallels.com/en/pro
 =head1 SYNOPSIS
 
     use API::Plesk;
-    use API::Plesk::Response;
 
-    my $plesk_client = API::Plesk->new(%params);
-    my $res = $plesk_client->Func_Module->operation_type(%params);
+    my $api = API::Plesk->new(%params);
+    my $res = $api->operator->operation(%params);
 
     if ($res->is_success) {
-        $res->get_data; # return arr ref of answer blocks
+        $res->data; # return arr ref of answer blocks
+    }
+    else {
+        $res->error
     }
 
 =head1 DESCRIPTION
