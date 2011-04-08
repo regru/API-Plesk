@@ -99,6 +99,9 @@ sub xml_http_req {
     $req->content_type('text/xml; charset=UTF-8');
     $req->content($xml);
 
+    # LWP6 hack to prevent verification of hostname
+    $ua->ssl_opts(verify_hostname => 0) if $ua->can('ssl_opts');
+
     warn $req->as_string if $self->{debug} > 1;
 
     my $res = eval {
