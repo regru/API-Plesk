@@ -14,6 +14,7 @@ sub new {
     return bless \%attrs, $class;
 }
 
+# API::Plesk object
 sub plesk { $_[0]->{plesk} }
 
 sub check_required_params {
@@ -48,6 +49,7 @@ sub sort_params {
     return \@sorted;
 }
 
+# check hosting xml section
 sub check_hosting {
     my ( $self, $params, $required ) = @_;
 
@@ -100,3 +102,40 @@ sub check_hosting {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+API::Plesk::Component -  Base class for components.
+
+=head1 SYNOPSIS
+
+package API::Plesk::Customer;
+
+use base 'API::Plesk::Component';
+
+sub get { ... }
+sub set { ... }
+
+1;
+
+=head1 DESCRIPTION
+
+Base class for components.
+
+=head1 METHODS
+
+=over 3
+
+=item new(%attributes)
+
+Create compoment object.
+
+=back
+
+=head1 AUTHOR
+
+Ivan Sokolov <lt>ivsokolov@cpan.org<gt>
+
+=cut

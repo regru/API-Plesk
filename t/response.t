@@ -49,8 +49,8 @@ my $res = API::Plesk::Response->new(
 ok($res->is_success);
 is($res->id, 123);
 is($res->guid, 123456);
-is($res->result->{status}, 'ok');
-is($res->data->{test}, 'qwerty');
+is($res->results->[0]->{status}, 'ok');
+is($res->data->[0]->{test}, 'qwerty');
 
 $res = API::Plesk::Response->new(
         operator  => 'webspace',
@@ -63,7 +63,11 @@ $res = API::Plesk::Response->new(
 ok(!$res->is_success);
 ok(!$res->id);
 ok(!$res->guid);
-is($res->{result}->{status}, 'error');
+is($res->{results}->[0]->{status}, 'error');
 is($res->error_code, '1018');
 is($res->error_text, 'Unable to create hosting on ip 12.34.56.78. Ip address does not exist in client\'s pool');
+is($res->error_codes->[0], '1018');
+is($res->error_texts->[0], 'Unable to create hosting on ip 12.34.56.78. Ip address does not exist in client\'s pool');
+is($res->error, '1018: Unable to create hosting on ip 12.34.56.78. Ip address does not exist in client\'s pool');
+is($res->errors->[0], '1018: Unable to create hosting on ip 12.34.56.78. Ip address does not exist in client\'s pool');
 

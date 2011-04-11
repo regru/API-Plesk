@@ -232,32 +232,43 @@ API::Plesk - OOP interface to the Plesk XML API (http://www.parallels.com/en/pro
 
     use API::Plesk;
 
-    my $api = API::Plesk->new(%params);
-    my $res = $api->operator->operation(%params);
+    my $api = API::Plesk->new(
+        username    => 'user', # required
+        password    => 'pass', # required
+        url         => 'https://127.0.0.1:8443/enterprise/control/agent.php', # required
+        api_version => '1.6.3.1',
+        debug       => 0,
+        timeout     => 30,
+    );
+
+    my $res = $api->customer->get();
 
     if ($res->is_success) {
-        $res->data; # return arr ref of answer blocks
+        for ( @{$res->data} ) {
+            print "login: $_->{login}\n";
+        }
     }
     else {
-        $res->error
+        print $res->error;
     }
 
 =head1 DESCRIPTION
 
-At present the module provides interaction with Plesk 8.3.0 (API 1.5.0.0). Complete support of operations with Accounts, partial support of work with Templates (account and domains). Support of addition of domains to user Accounts.
+At present the module provides interaction with Plesk 10.1 (API 1.6.3.1). 
+Distribution was completely rewritten and become more friendly for developers.
+Naming of packages and methods become similar to the same operators and operations of Plesk XML API.
 
-API::Plesk module gives the convenient interface for addition of new functions. Extensions represent modules in a folder Plesk with definitions of demanded functions. Each demanded operation is described by two functions: op and op_response_parse. The first sub generates XML query to Plesk, the second is responsible for parse XML answer and its representation in Perl Native Structures. As a template for a writing of own expansions is better to use API/Plesk/Account.pm. In module API::Plesk::Methods we can find service functions for a writing our extensions.
+Partially implemented:
+Api::Plesk::Customer 
+Api::Plesk::Webspace
+Api::Plesk::ServicePlan
+Api::Plesk::ServicePlanAddon
+Api::Plesk::Site
+Api::Plesk::Database
 
-For example, here the set of subs in the Accounts module is those.
+=head1 COMPATIBILITY WITH VERSION 1.*
 
-  create  / create_response_parse
-  modify  / modify_response_parse
-  delete  / delete_response_parse
-  get     / get_response_parse
-
-=head1 EXPORT
-
-Nothing.
+This is develover release. Comapatibility with Plesk::API 1.* is not implemented yet.
 
 =head1 METHODS
 
@@ -268,11 +279,14 @@ Nothing.
 Create new class instance.
 
 Required params:
+username    
+password    
+url         
 
-  api_version -- default: 1.6.3.0
-  username    -- Plesk user name.
-  password    -- Plesk password.
-  url         -- full url to Plesk XML RPC gate (https://ip.ad.dr.ess:8443/enterprise/control/agent.php).
+Additional params:
+api_version - default 1.6.3.1
+debug       - default 0
+timeout     - default 30 sec.
 
 =back
 
@@ -288,7 +302,7 @@ Ivan Sokolov E<lt>ivsokolov[at]cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2008 by NRG
+Copyright (C) 2008 by Ivan Sokolov
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.8 or,
