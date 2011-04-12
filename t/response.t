@@ -12,7 +12,7 @@ use TestData;
 use XML::Fast;
 
 BEGIN { 
-    plan tests => 13;
+    plan tests => 17;
 
     use_ok('API::Plesk::Response'); 
 }

@@ -142,3 +142,47 @@ sub switch_subscription {
 
 
 1;
+
+__END__
+
+=head1 NAME
+
+API::Plesk::Webspace -  Managing subscriptions (webspaces).
+
+=head1 SYNOPSIS
+
+    $api = API::Plesk->new(...);
+    $response = $api->webspace->add(..);
+    $response = $api->webspace->del(..);
+
+=head1 DESCRIPTION
+
+Module manage subscriptions (webspaces).
+
+=head1 METHODS
+
+=over 3
+
+=item add(%params)
+
+=item get(%params)
+
+=item set(%params)
+
+=item del(%params)
+
+=item add_plan_item(%params)
+
+=item add_subscription(%params)
+
+=item remove_subscription(%params)
+
+=item switch_subscription(%params)
+
+=back
+
+=head1 AUTHOR
+
+Ivan Sokolov <lt>ivsokolov@cpan.org<gt>
+
+=cut

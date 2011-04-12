@@ -226,7 +226,7 @@ __END__
 
 =head1 NAME
 
-API::Plesk - OOP interface to the Plesk XML API (http://www.parallels.com/en/products/plesk/).
+API::Plesk - OO interface to the Plesk XML API (http://www.parallels.com/en/products/plesk/).
 
 =head1 SYNOPSIS
 
@@ -259,11 +259,17 @@ Distribution was completely rewritten and become more friendly for developers.
 Naming of packages and methods become similar to the same operators and operations of Plesk XML API.
 
 Partially implemented:
+
 Api::Plesk::Customer 
+
 Api::Plesk::Webspace
+
 Api::Plesk::ServicePlan
+
 Api::Plesk::ServicePlanAddon
+
 Api::Plesk::Site
+
 Api::Plesk::Database
 
 =head1 COMPATIBILITY WITH VERSION 1.*
@@ -288,6 +294,24 @@ api_version - default 1.6.3.1
 debug       - default 0
 timeout     - default 30 sec.
 
+=item send($operator, $operation, $data, %params)
+
+This method prepare and sends request to Plesk API.
+
+Returns API::Plesk::Response object.
+
+$operator - name of operator XML section of Plesk API.
+
+$operation - mane of operation XML section of Plesk API.
+
+$data - data hash that is converted to XML and is sended to plesk server.
+
+=item xml_http_req( $xml )
+
+Internal method. it implements real request sending to Plesk API.
+
+Returns array ( $response_xml, $error ).
+
 =back
 
 =head1 SEE ALSO
@@ -297,7 +321,9 @@ Plesk XML RPC API  http://www.parallels.com/en/products/plesk/docs/
 =head1 AUTHOR
 
 Odintsov Pavel E<lt>nrg[at]cpan.orgE<gt>
+
 Nikolay Shulyakovskiy E<lt>shulyakovskiy[at]rambler.ruE<gt>
+
 Ivan Sokolov E<lt>ivsokolov[at]cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE

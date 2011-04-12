@@ -55,3 +55,41 @@ sub del_db_user {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+API::Plesk::Database -  Managing databases.
+
+=head1 SYNOPSIS
+
+    $api = API::Plesk->new(...);
+    $response = $api->database->add_db(..);
+    $response = $api->database->del_db(..);
+    $response = $api->database->add_db_user(..);
+    $response = $api->database->del_db_user(..);
+
+=head1 DESCRIPTION
+
+Module manage databases and database users.
+
+=head1 METHODS
+
+=over 3
+
+=item add_db(%params)
+
+=item del_db(%params)
+
+=item add_db_user(%params)
+
+=item del_db_user(%params)
+
+=back
+
+=head1 AUTHOR
+
+Ivan Sokolov <lt>ivsokolov@cpan.org<gt>
+
+=cut

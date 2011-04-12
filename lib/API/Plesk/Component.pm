@@ -128,9 +128,15 @@ Base class for components.
 
 =over 3
 
-=item new(%attributes)
+=item new(plesk => API::Plesk->new(...))
 
-Create compoment object.
+Create component object.
+
+=item plesk()
+
+    Referer to API::Plesk object.
+
+=item
 
 =back
 

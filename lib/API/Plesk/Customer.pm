@@ -85,3 +85,72 @@ sub del {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+API::Plesk::Customer -  Managing customer accounts.
+
+=head1 SYNOPSIS
+
+    $api = API::Plesk->new(...);
+    $response = $api->customer->add(..);
+    $response = $api->customer->get(..);
+    $response = $api->customer->set(..);
+    $response = $api->customer->del(..);
+
+=head1 DESCRIPTION
+
+Module manage customer accounts.
+
+=head1 METHODS
+
+=over 3
+
+=item add(%params)
+
+Method adds customer to Plesk Panel.
+
+    %params = (
+        # required
+        gen_info => {
+            pname => 'Mike',
+            login => 'mike',
+            passwd => '12345',
+            ...            
+        }
+    );
+
+=item get(%params)
+
+Method gets customer data.
+
+    %params = (
+        filter => {...}
+    );
+
+=item set(%params)
+
+Method sets customer data.
+
+    %params = (
+        filter   => {...},
+        gen_info => {...}
+    );
+
+=item del(%params)
+
+Method deletes customer from Plesk Panel.
+
+    %params = (
+        filter => {...}
+    );
+
+=back
+
+=head1 AUTHOR
+
+Ivan Sokolov <lt>ivsokolov@cpan.org<gt>
+
+=cut
