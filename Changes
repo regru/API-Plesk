@@ -27,4 +27,7 @@ Revision history for Perl extension API::Plesk.
     Patch from Nikolay Shulyakovskiy
 1.09
     Add Mail/DB/DBUsers/Domains export from Plesk
+2.00_1
+    Fully rewrited
+    Compatibility with Plesk API 1.6.3.1
     

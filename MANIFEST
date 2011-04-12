@@ -9,6 +9,7 @@ lib/API/Plesk/ServicePlan.pm
 lib/API/Plesk/ServicePlanAddon.pm
 lib/API/Plesk/Site.pm
 lib/API/Plesk/Webspace.pm
+lib/API/Plesk/DNS.pm
 Makefile.PL
 MANIFEST			This list of files
 META.yml
@@ -19,4 +20,5 @@ t/database.t
 t/plesk.t
 t/response.t
 t/site.t
+t/webspace.t
 t/TestData.pm
