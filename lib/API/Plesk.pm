@@ -14,7 +14,7 @@ use version;
 
 use API::Plesk::Response;
 
-our $VERSION = '2.00_1';
+our $VERSION = '2.00_2';
 
 # creates accessors to components
 # can support old interface of API::Plesk
