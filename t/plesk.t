@@ -9,7 +9,7 @@ use lib qw(t lib);
 use TestData;
 
 BEGIN {
-    plan tests => 7;
+    plan tests => 8;
 }
 
 BEGIN {
