@@ -155,11 +155,11 @@ sub _render_xml {
             $value = _render_xml(&$value);
         }
 
-        if ( $value ) {
-            $xml .= "<$tag>$value</$tag>";
+        if ( !defined $value or $value eq '' ) {
+            $xml .= "<$tag/>";
         }
         else {
-            $xml .= "<$tag/>";
+            $xml .= "<$tag>$value</$tag>";
         }
     }
 

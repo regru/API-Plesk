@@ -43,6 +43,11 @@ is($api->render_xml({
     }
 }), '<?xml version="1.0" encoding="UTF-8"?><packet version="1.6.3.0"><webspace><add><gen_setup><qq>ddd</qq><name>sample.com</name><ddd><lll>1234567</lll></ddd></gen_setup><hosting><value>erty</value><name>123</name></hosting></add></webspace></packet>', 'render_xml');
 
+is ( $api->render_xml({ prop => [
+    {value1 => '0'},
+    {value2 => ''},
+    {value3 => undef},
+]}), '<?xml version="1.0" encoding="UTF-8"?><packet version="1.6.3.0"><prop><value1>0</value1><value2/><value3/></prop></packet>', 'render_xml');
 # compoments
 
 $api = API::Plesk->new(
