@@ -23,6 +23,7 @@ init_components(
     customer           => [['1.6.3.0', 'Customer']],
     webspace           => [['1.6.3.0', 'Webspace']],
     site               => [['1.6.3.0', 'Site']],
+    site_alias         => [['1.6.3.0', 'SiteAlias']],
     service_plan       => [['1.6.3.0', 'ServicePlan']],
     service_plan_addon => [['1.6.3.0', 'ServicePlanAddon']],
     database           => [['1.6.3.0', 'Database']],
