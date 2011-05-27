@@ -8,6 +8,7 @@ lib/API/Plesk/Response.pm
 lib/API/Plesk/ServicePlan.pm
 lib/API/Plesk/ServicePlanAddon.pm
 lib/API/Plesk/Site.pm
+lib/API/Plesk/SiteAlias.pm
 lib/API/Plesk/Webspace.pm
 lib/API/Plesk/DNS.pm
 Makefile.PL

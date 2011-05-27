@@ -32,4 +32,9 @@ Revision history for Perl extension API::Plesk.
     Compatibility with Plesk API 1.6.3.1
 2.00_2
     Fixed xml renderer
+2.00_3
+    Added site-alias componenet
+    Fixed add and set webspace
+    Added tests
+    
     

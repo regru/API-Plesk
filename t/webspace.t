@@ -11,13 +11,96 @@ use lib 't';
 use TestData;
 
 BEGIN { 
-    plan tests => 5;
+    plan tests => 7;
     use_ok('API::Plesk::Webspace'); 
 }
 
 my $api = API::Plesk->new( %TestData::plesk_valid_params );
 
 isa_ok($api->webspace, 'API::Plesk::Webspace');
+
+is_deeply(
+    $api->webspace->add(
+        'plan-name' => '123',
+        gen_setup   => {
+            name          => '123',
+            ip_address    => '123',
+            'owner-login' => '123',
+        },
+        hosting     => {
+            type       => 'vrt_hst',
+            ftp_login  => '123',
+            ftp_passwd => '123',
+            ip_address => '123',
+        },
+        prefs => { www => 'true' },
+        bulk_send   => 1,
+    ),
+    [
+        {
+            gen_setup   => [
+                {name          => '123'},
+                {'owner-login' => '123'},
+                {ip_address    => '123'},
+            ],
+        },
+        {
+            hosting     => {
+                vrt_hst => [
+                    { property => [ {name => 'ftp_login'}, {value  => '123'} ] },
+                    { property => [ {name => 'ftp_passwd'}, {value => '123'} ] },
+                    { ip_address => '123' },
+                ]
+            },
+        },
+        {   prefs => { www => 'true' } },
+        { 'plan-name' => '123' },
+    ],
+    'add'
+);
+
+is_deeply(
+    $api->webspace->set(
+        filter => { name => '123' },
+        gen_setup   => {
+            name          => '123',
+            ip_address    => '123',
+            'owner-login' => '123',
+        },
+        hosting     => {
+            type       => 'vrt_hst',
+            ftp_login  => '123',
+            ftp_passwd => '123',
+            ip_address => '123',
+        },
+        prefs => { www => 'true' },
+        bulk_send   => 1,
+    ),
+    [
+        { filter => { name => '123' } },
+        { values => [
+            {
+                gen_setup   => [
+                    {name          => '123'},
+                    {'owner-login' => '123'},
+                    {ip_address    => '123'},
+                ],
+            },
+            {
+                hosting     => {
+                    vrt_hst => [
+                        { property => [ {name => 'ftp_login'}, {value  => '123'} ] },
+                        { property => [ {name => 'ftp_passwd'}, {value => '123'} ] },
+                        { ip_address => '123' },
+                    ]
+                },
+            },
+            { prefs => { www => 'true' } },
+       ]},
+    ],
+    'set'
+);
+
 
 is_deeply(
     $api->webspace->add_subscription(

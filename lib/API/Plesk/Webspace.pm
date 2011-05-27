@@ -21,6 +21,18 @@ my @gen_setup_fields = qw(
     external-id
 );
 
+my @main_fields = qw(
+    gen_setup
+    hosting    
+    limits     
+    prefs      
+    performance
+    permissions
+    plan-id
+    plan-name
+    plan-guid
+    plan-external-id
+);
 
 sub add {
     my ( $self, %params ) = @_;
@@ -33,9 +45,11 @@ sub add {
     $self->check_required_params($gen_setup, qw(name ip_address));
 
     $params{gen_setup} = $self->sort_params($gen_setup, @gen_setup_fields);
+    
+    my $data = $self->sort_params(\%params, @main_fields);
 
-    return $bulk_send ? \%params :
-        $self->plesk->send('webspace', 'add', \%params);
+    return $bulk_send ? $data :
+        $self->plesk->send('webspace', 'add', $data);
 }
 
 sub get {
@@ -61,13 +75,15 @@ sub set {
     my ( $self, %params ) = @_;
     my $bulk_send = delete $params{bulk_send}; 
     my $filter    = delete $params{filter} || '';
+    my $gen_setup = $params{gen_setup};
     
+    $params{gen_setup} = $self->sort_params($gen_setup, @gen_setup_fields) if $gen_setup;
     $self->check_hosting(\%params);
 
-    my $data = {
-        filter  => $filter,
-        values  => \%params,
-    };
+    my $data = [
+        { filter  => $filter },
+        { values  => $self->sort_params(\%params, @main_fields) },
+    ];
 
     return $bulk_send ? $data : 
         $self->plesk->send('webspace', 'set', $data);
