@@ -5,6 +5,7 @@ use strict;
 use warnings;
 
 use Carp;
+use Data::Dumper;
 
 use base 'API::Plesk::Component';
 
@@ -23,9 +24,11 @@ sub add {
     $self->check_hosting(\%params);
 
     $params{gen_setup} = $self->sort_params($gen_setup, @fields);
+    
+    my $data = $self->sort_params(\%params, qw(gen_setup hosting prefs));
 
-    return $bulk_send ? \%params : 
-        $self->plesk->send('site', 'add', \%params);
+    return $bulk_send ? $data : 
+        $self->plesk->send('site', 'add', $data);
 }
 
 sub get {
@@ -54,9 +57,10 @@ sub set {
     
     $self->check_hosting(\%params);
 
+
     my $data = {
         filter  => $filter,
-        values  => \%params,
+        values  => $self->sort_params(\%params, qw(gen_setup prefs hosting disk_usage)),
     };
 
     return $bulk_send ? $data : 

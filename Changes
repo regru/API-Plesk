@@ -33,8 +33,9 @@ Revision history for Perl extension API::Plesk.
 2.00_2
     Fixed xml renderer
 2.00_3
-    Added site-alias componenet
+    Added site-alias component
     Fixed add and set webspace
     Added tests
+    Fixed site component
     
     

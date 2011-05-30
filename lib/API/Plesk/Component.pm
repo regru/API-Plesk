@@ -40,7 +40,6 @@ sub sort_params {
         if ( ref $key ) {
             ($key) = grep { exists $params->{$_} } @$key 
         }
-
         push @sorted, {$key => $params->{$key}}
             if exists $params->{$key};
 
