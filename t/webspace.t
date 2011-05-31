@@ -30,7 +30,7 @@ is_deeply(
         hosting     => {
             type       => 'vrt_hst',
             ftp_login  => '123',
-            ftp_passwd => '123',
+            ftp_password => '123',
             ip_address => '123',
         },
         prefs => { www => 'true' },
@@ -48,7 +48,7 @@ is_deeply(
             hosting     => {
                 vrt_hst => [
                     { property => [ {name => 'ftp_login'}, {value  => '123'} ] },
-                    { property => [ {name => 'ftp_passwd'}, {value => '123'} ] },
+                    { property => [ {name => 'ftp_password'}, {value => '123'} ] },
                     { ip_address => '123' },
                 ]
             },
@@ -70,7 +70,7 @@ is_deeply(
         hosting     => {
             type       => 'vrt_hst',
             ftp_login  => '123',
-            ftp_passwd => '123',
+            ftp_password => '123',
             ip_address => '123',
         },
         prefs => { www => 'true' },
@@ -90,7 +90,7 @@ is_deeply(
                 hosting     => {
                     vrt_hst => [
                         { property => [ {name => 'ftp_login'}, {value  => '123'} ] },
-                        { property => [ {name => 'ftp_passwd'}, {value => '123'} ] },
+                        { property => [ {name => 'ftp_password'}, {value => '123'} ] },
                         { ip_address => '123' },
                     ]
                 },

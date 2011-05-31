@@ -50,7 +50,7 @@ eval {
         hosting => {
             type => 'vrt_hst',
             ftp_login => 'ert',
-            ftp_passwd => '123',
+            ftp_password => '123',
             ip_address => '12.34.56.78',
         }
     })
@@ -62,7 +62,7 @@ eval {
         hosting => {
             type => 'vrt_hst',
             ftp_login => 'ert',
-            ftp_passwd => '123',
+            ftp_password => '123',
         }
     })
 };
@@ -73,7 +73,7 @@ eval {
         hosting => {
             type => 'vrt_ht',
             ftp_login => 'ert',
-            ftp_passwd => '123',
+            ftp_password => '123',
         }
     })
 };

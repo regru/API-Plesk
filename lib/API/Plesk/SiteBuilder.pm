@@ -14,7 +14,7 @@ sub assign_trial_site {
     my ( $self, %params ) = @_;
     my $bulk_send = delete $params{bulk_send};
 
-    $self->check_required_params(\%params, [qw(pp-site-guid sb-site-uuid)]);
+    $self->check_required_params(\%params, qw(pp-site-guid sb-site-uuid));
     
     return $bulk_send ? \%params : 
         $self->plesk->send('sitebuilder', 'assign-trial-site', \%params);

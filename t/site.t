@@ -58,7 +58,7 @@ is_deeply(
             type => 'vrt_hst',
             ip_address => '12.34.56.78',
             ftp_login => 'qwerty',
-            ftp_passwd => '12345',
+            ftp_password => '12345',
             ip_address => '12.34.56.78',
         },
         bulk_send => 1
@@ -76,7 +76,7 @@ is_deeply(
                         {value => 'qwerty'}
                     ]},
                     { property => [
-                        {name => 'ftp_passwd'},
+                        {name => 'ftp_password'},
                         {value => '12345'}
                     ]},
                     {ip_address => '12.34.56.78'},

@@ -13,6 +13,7 @@ lib/API/Plesk/SiteBuilder.pm
 lib/API/Plesk/FTPUser.pm
 lib/API/Plesk/Webspace.pm
 lib/API/Plesk/DNS.pm
+lib/API/Plesk/WebUser.pm
 Makefile.PL
 MANIFEST			This list of files
 META.yml
@@ -23,5 +24,9 @@ t/database.t
 t/plesk.t
 t/response.t
 t/site.t
+t/sitebuilder.t
+t/site_alias.t
+t/ftp_user.t
+t/webuser.t
 t/webspace.t
 t/TestData.pm

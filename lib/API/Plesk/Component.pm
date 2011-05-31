@@ -65,7 +65,7 @@ sub check_hosting {
     
     if ( $type eq 'vrt_hst' ) {
 
-        $self->check_required_params($hosting, qw(ftp_login ftp_passwd));
+        $self->check_required_params($hosting, qw(ftp_login ftp_password));
 
         my @properties;
         for my $key ( keys %$hosting ) {
