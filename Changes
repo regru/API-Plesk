@@ -37,5 +37,7 @@ Revision history for Perl extension API::Plesk.
     Fixed add and set webspace
     Added tests
     Fixed site component
+    Added sitebuilder component
+    Added ftp-user component
     
     
