@@ -9,6 +9,8 @@ lib/API/Plesk/ServicePlan.pm
 lib/API/Plesk/ServicePlanAddon.pm
 lib/API/Plesk/Site.pm
 lib/API/Plesk/SiteAlias.pm
+lib/API/Plesk/SiteBuilder.pm
+lib/API/Plesk/FTPUser.pm
 lib/API/Plesk/Webspace.pm
 lib/API/Plesk/DNS.pm
 Makefile.PL

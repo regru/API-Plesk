@@ -24,6 +24,8 @@ init_components(
     webspace           => [['1.6.3.0', 'Webspace']],
     site               => [['1.6.3.0', 'Site']],
     site_alias         => [['1.6.3.0', 'SiteAlias']],
+    sitebuilder        => [['1.6.3.0', 'SiteBuilder']],
+    ftp_user           => [['1.6.3.0', 'FTPUser']],
     service_plan       => [['1.6.3.0', 'ServicePlan']],
     service_plan_addon => [['1.6.3.0', 'ServicePlanAddon']],
     database           => [['1.6.3.0', 'Database']],
