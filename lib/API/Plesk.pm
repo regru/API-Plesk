@@ -30,6 +30,7 @@ init_components(
     service_plan_addon => [['1.6.3.0', 'ServicePlanAddon']],
     database           => [['1.6.3.0', 'Database']],
     webuser            => [['1.6.3.0', 'WebUser']],
+    dns                => [['1.6.3.0', 'DNS']],
    
     # old 
     Accounts => [['1.5.0.0', 'Accounts']],

@@ -23,7 +23,35 @@ sub add_rec {
     my $data = $self->sort_params(\%params, @fields, 'opt');
 
     return $bulk_send ? $data : 
-        $self->plesk->send('site', 'get', $data);
+        $self->plesk->send('dns', 'add_rec', $data);
+}
+
+sub get_rec {
+    my ( $self, %filter ) = @_;
+    my $bulk_send = delete $filter{bulk_send};
+    my $template = delete $filter{template};
+
+    my $data = [
+        { filter  => @_ > 2 ? \%filter : '' },
+        ( $template ? {template => $template} : () ),
+    ];
+
+    return $bulk_send ? $data : 
+        $self->plesk->send('dns', 'get_rec', $data);
+}
+
+sub del_rec {
+    my ( $self, %filter ) = @_;
+    my $bulk_send = delete $filter{bulk_send};
+    my $template = delete $filter{template};
+
+    my $data = [
+        { filter  => @_ > 2 ? \%filter : '' },
+        ( $template ? {template => $template} : () ),
+    ];
+
+    return $bulk_send ? $data : 
+        $self->plesk->send('dns', 'del_rec', $data);
 }
 
 1;
