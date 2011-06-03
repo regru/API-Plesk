@@ -9,7 +9,7 @@ use lib 't';
 use TestData;
 
 BEGIN {
-    plan tests => 9;
+    plan tests => 10;
     use_ok( 'API::Plesk::Component' );
 }
 
@@ -78,5 +78,16 @@ eval {
     })
 };
 like($@, qr/Unknown hosting type!/); 
+
+is_deeply(
+    $c->prepare_filter({id => [qw(1 2 3)], name => 'id'}, sort_keys => [qw(id name)]),
+    [
+        { id => 1 },
+        { id => 2 },
+        { id => 3 },
+        { name => 'id' },
+    ],
+    'prepare_filter'
+);
 
 

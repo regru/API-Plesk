@@ -25,8 +25,9 @@ t/plesk.t
 t/response.t
 t/site.t
 t/sitebuilder.t
-t/site_alias.t
+t/site-alias.t
 t/ftp_user.t
 t/webuser.t
 t/webspace.t
+t/dns.t
 t/TestData.pm

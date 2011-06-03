@@ -30,6 +30,7 @@ sub get_rec {
     my ( $self, %filter ) = @_;
     my $bulk_send = delete $filter{bulk_send};
     my $template = delete $filter{template};
+    
 
     my $data = [
         { filter  => @_ > 2 ? \%filter : '' },
@@ -46,7 +47,7 @@ sub del_rec {
     my $template = delete $filter{template};
 
     my $data = [
-        { filter  => @_ > 2 ? \%filter : '' },
+        { filter  => $self->prepare_filter(\%filter) },
         ( $template ? {template => $template} : () ),
     ];
 
