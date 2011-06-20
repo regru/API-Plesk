@@ -40,5 +40,6 @@ Revision history for Perl extension API::Plesk.
     Added sitebuilder component
     Added ftp-user component
     Fixed hosting ftp_password bug
-    Added dns compoment 
+    Added dns component 
+    Added mail component
     

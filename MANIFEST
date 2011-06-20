@@ -13,6 +13,7 @@ lib/API/Plesk/SiteBuilder.pm
 lib/API/Plesk/FTPUser.pm
 lib/API/Plesk/Webspace.pm
 lib/API/Plesk/DNS.pm
+lib/API/Plesk/Mail.pm
 lib/API/Plesk/WebUser.pm
 Makefile.PL
 MANIFEST			This list of files
@@ -30,4 +31,5 @@ t/ftp_user.t
 t/webuser.t
 t/webspace.t
 t/dns.t
+t/mail.t
 t/TestData.pm

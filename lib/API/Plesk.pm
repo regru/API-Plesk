@@ -31,6 +31,7 @@ init_components(
     database           => [['1.6.3.0', 'Database']],
     webuser            => [['1.6.3.0', 'WebUser']],
     dns                => [['1.6.3.0', 'DNS']],
+    mail               => [['1.6.3.0', 'Mail']],
    
     # old 
     Accounts => [['1.5.0.0', 'Accounts']],
