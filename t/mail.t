@@ -25,7 +25,7 @@ is_deeply(
         bulk_send => 1,
     ),
     { 
-        filter => {site_id => 123},
+        site_id => 123,
     },
     'enable'
 );
@@ -36,7 +36,7 @@ is_deeply(
         bulk_send => 1,
     ),
     { 
-        filter => {site_id => 123},
+        site_id => 123,
     },
     'disable'
 );

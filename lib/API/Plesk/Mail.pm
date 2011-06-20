@@ -13,24 +13,16 @@ sub enable {
     my ($self, %filter) = @_;
     my $bulk_send = delete $filter{bulk_send}; 
 
-    my $data = {
-        filter  => @_ > 2 ? \%filter : ''
-    };
-
-    return $bulk_send ? $data : 
-        $self->plesk->send('mail', 'enable', $data);
+    return $bulk_send ? \%filter : 
+        $self->plesk->send('mail', 'enable', \%filter);
 }
 
 sub disable {
     my ($self, %filter) = @_;
     my $bulk_send = delete $filter{bulk_send}; 
 
-    my $data = {
-        filter  => @_ > 2 ? \%filter : ''
-    };
-
-    return $bulk_send ? $data : 
-        $self->plesk->send('mail', 'disable', $data);
+    return $bulk_send ? \%filter : 
+        $self->plesk->send('mail', 'disable', \%filter);
 }
 
 
