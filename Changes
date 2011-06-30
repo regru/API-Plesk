@@ -42,4 +42,5 @@ Revision history for Perl extension API::Plesk.
     Fixed hosting ftp_password bug
     Added dns component 
     Added mail component
+    Fixed is_connection_error function
     

@@ -100,7 +100,11 @@ sub errors {
 
 sub is_connection_error {
     my ( $self ) = @_;
-    return $self->error_text eq 'connection error' ? 1 : 0;
+    
+    return 
+        $self->error_text eq 'connection timeout' ||
+        $self->error_text eq '500 SSL read timeout'
+            ? 1 : 0;
 }
 
 1;
