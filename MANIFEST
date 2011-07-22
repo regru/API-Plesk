@@ -32,4 +32,5 @@ t/webuser.t
 t/webspace.t
 t/dns.t
 t/mail.t
+t/service-plan.t
 t/TestData.pm

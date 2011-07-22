@@ -43,4 +43,6 @@ Revision history for Perl extension API::Plesk.
     Added dns component 
     Added mail component
     Fixed is_connection_error function
+    Added set and del opetations to service-plan
+    Added test of service-plan component
     
