@@ -14,6 +14,7 @@ Revision history for Perl extension API::Plesk.
     Added set and del opetations to service-plan
     Added test of service-plan component
     Reformated Changes
+    Fixed Pod
 
 2.00_2 16 May 2011 11:36:20
     Fixed xml renderer

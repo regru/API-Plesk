@@ -10,6 +10,7 @@ my $build = Module::Build->new(
     license     => 'perl',
     dist_author => 'Ivan Sokolov <ivsokolov@cpan.org>',
     requires    => {
+        'Module::Build'   => 0,
         'Data::Dumper'    => 0,
         'LWP::UserAgent'  => 0,
         'HTTP::Request'   => 0,
