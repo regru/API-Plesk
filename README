@@ -33,34 +33,68 @@ DESCRIPTION
 
     Partially implemented:
 
-    Api::Plesk::Customer
+    API::Plesk::Customer
 
-    Api::Plesk::Webspace
+    API::Plesk::Database
 
-    Api::Plesk::ServicePlan
+    API::Plesk::DNS
 
-    Api::Plesk::ServicePlanAddon
+    API:Plesk::FTPUser
 
-    Api::Plesk::Site
+    API:Plesk::Mail
 
-    Api::Plesk::Database
+    API::Plesk::ServicePlan
+
+    API::Plesk::ServicePlanAddon
+
+    API::Plesk::Site
+
+    API::Plesk::SiteAlias
+
+    API::Plesk::SiteBuilder
+
+    API::Plesk::Webspace
+
+    API::Plesk::WebUser
 
 COMPATIBILITY WITH VERSION 1.*
     This is develover release. Comapatibility with Plesk::API 1.* is not
     implemented yet.
 
-INSTALLATION
-    To install this module type the following:
+METHODS
+    new(%params)
+       Create new class instance.
 
-    perl Makefile.PL
-    make
-    make test
-    make install
+       Required params: username password url
 
+       Additional params: api_version - default 1.6.3.1 debug - default 0
+       timeout - default 30 sec.
+
+    send($operator, $operation, $data, %params)
+       This method prepare and sends request to Plesk API.
+
+       Returns API::Plesk::Response object.
+
+       $operator - name of operator XML section of Plesk API.
+
+       $operation - mane of operation XML section of Plesk API.
+
+       $data - data hash that is converted to XML and is sended to plesk
+       server.
+
+    xml_http_req( $xml )
+       Internal method. it implements real request sending to Plesk API.
+
+       Returns array ( $response_xml, $error ).
+
+SEE ALSO
+    Plesk XML RPC API http://www.parallels.com/en/products/plesk/docs/
 
 AUTHOR
     Odintsov Pavel <nrg[at]cpan.org>
+
     Nikolay Shulyakovskiy <shulyakovskiy[at]rambler.ru>
+
     Ivan Sokolov <ivsokolov[at]cpan.org>
 
 COPYRIGHT AND LICENSE
