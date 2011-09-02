@@ -44,7 +44,7 @@ sub get {
 
     my $data = { 
         filter => @_ > 2 ? \%filter : '',
-        dataset => [ {gen_info => ''}, {stat => ''} ]
+        dataset => [ {'gen-info' => ''}, {roles => ''} ]
     };
 
     return $bulk_send ? $data : 
