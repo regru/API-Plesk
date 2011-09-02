@@ -291,6 +291,8 @@ API::Plesk::Webspace
 
 API::Plesk::WebUser
 
+API::Plesk::User
+
 =head1 COMPATIBILITY WITH VERSION 1.*
 
 This is develover release. Comapatibility with Plesk::API 1.* is not implemented yet.
