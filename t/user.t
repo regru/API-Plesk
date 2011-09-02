@@ -17,7 +17,7 @@ BEGIN {
 
 my $api = API::Plesk->new( %TestData::plesk_valid_params );
 
-my $users = API::Plesk::User->new( plesk => $api );
+my $users = $api->user;
 
 isa_ok($users, 'API::Plesk::User');
 
