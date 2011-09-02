@@ -1,5 +1,8 @@
 Revision history for Perl extension API::Plesk.
 
+2.00_4
+    Added user component (by bgmilne)
+
 2.00_3 12 Aug 10:00
     Added site-alias component
     Fixed add and set webspace
