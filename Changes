@@ -1,7 +1,8 @@
 Revision history for Perl extension API::Plesk.
 
 2.00_4
-    Added user component (by bgmilne)
+    Added user component (bgmilne)
+    Added mock module for testing without sending requests to real api
 
 2.00_3 12 Aug 10:00
     Added site-alias component

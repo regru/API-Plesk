@@ -1,6 +1,7 @@
 Build.PL
 Changes
 lib/API/Plesk.pm
+lib/API/Plesk/Mock.pm
 lib/API/Plesk/Component.pm
 lib/API/Plesk/Customer.pm
 lib/API/Plesk/Database.pm
@@ -23,6 +24,7 @@ t/compoment.t
 t/customer.t
 t/database.t
 t/plesk.t
+t/mock.t
 t/response.t
 t/site.t
 t/sitebuilder.t

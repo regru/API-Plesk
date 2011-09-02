@@ -208,7 +208,7 @@ sub load_component {
         # select compitable version of component
         if ( $version >= $item->[0] ) {
 
-            my $pkg = ref($self) . '::' . $item->[1];
+            my $pkg = 'API::Plesk::' . $item->[1];
 
             my $module = "$pkg.pm";
                $module =~ s/::/\//g;
