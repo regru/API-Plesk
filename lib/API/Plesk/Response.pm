@@ -9,7 +9,7 @@ use Data::Dumper;
 sub new {
     my ( $class, %attrs) = @_;
     $class = ref $class || $class;
-    
+
     my $operator  = $attrs{operator};
     my $operation = $attrs{operation};
     my $response  = $attrs{response};
@@ -39,7 +39,7 @@ sub new {
 
         }
     }
-    
+
     my $self = {
         results     => $results,
         operator   => $operator,
@@ -61,7 +61,7 @@ sub data {
     return [ map { $_->{data} || () } @{$self->{results}} ];
 }
 
-sub results { 
+sub results {
     my ( $self ) = @_;
     return undef unless $self->is_success;
     return $self->{results} || [];
@@ -70,7 +70,7 @@ sub results {
 sub error_code { $_[0]->error_codes->[0]; }
 sub error_text { $_[0]->error_texts->[0]; }
 
-sub error { 
+sub error {
     my ( $self ) = @_;
     return ($self->{results}->[0]->{errcode} || '0') . ': ' .  $self->{results}->[0]->{errtext};
 }
@@ -100,10 +100,11 @@ sub errors {
 
 sub is_connection_error {
     my ( $self ) = @_;
-    
-    return 
-        $self->error_text eq 'connection timeout' ||
-        $self->error_text eq '500 SSL read timeout'
+
+    return
+        $self->error_text =~ /connection failed/ ||
+        $self->error_text =~ /connection timeout/ ||
+        $self->error_text =~ /500 SSL read timeout/
             ? 1 : 0;
 }
 
@@ -120,7 +121,7 @@ API::Plesk::Response -  Class for processing server answers with errors handling
     my $res = API::Plesk::Response->new(
         operator => 'customer',
         operation => 'get',
-        response => 'xml answer from plesk api',        
+        response => 'xml answer from plesk api',
     );
 
     $res->is_success;
@@ -190,7 +191,7 @@ Returns true if connection error happened.
     $response->error_text;
 
 =item error_texts()
-    
+
     $response->error_texts->[0];
 
 =item error()
@@ -198,7 +199,7 @@ Returns true if connection error happened.
     $response->error;
 
 =item errors()
-    
+
     $response->errors->[0];
 
 =back
