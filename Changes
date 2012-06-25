@@ -1,10 +1,13 @@
 Revision history for Perl extension API::Plesk.
 
-2.00
+2.01 2012-06-25
+    Fixed tests
+
+2.00 2012-06-25
     Improved is_connection_error function
-2.00_4
     Added user component (bgmilne)
     Added mock module for testing without sending requests to real api
+    Fixed bug in service_plan->get method
 
 2.00_3 12 Aug 10:00
     Added site-alias component
