@@ -47,7 +47,7 @@ is_deeply(
     'set'
 );
 
- is_deeply(
+is_deeply(
     $api->service_plan->del(
         name      => 'test.ru',
         bulk_send => 1
@@ -56,4 +56,19 @@ is_deeply(
         filter => {name => 'test.ru'},
     },
     'del'
+);
+
+is_deeply(
+    $api->service_plan->get(
+	name => 'Host-Lite',
+	'owner-id' => 123,
+	bulk_send => 1,
+    ),
+    {
+	'owner-id' => 123,
+	filter => {
+	    name => 'Host-Lite',
+	}
+    },
+    'get'
 );

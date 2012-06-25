@@ -113,7 +113,7 @@ our %plesk_valid_params = (
     username      => 'admin',
     password      => 'qwerty',
     url           => $plesk_url,
-    debug         => q//,
+    debug         => 0,
 );
 
 

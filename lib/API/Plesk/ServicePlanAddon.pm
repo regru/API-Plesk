@@ -8,13 +8,22 @@ use Carp;
 
 use base 'API::Plesk::Component';
 
+my @main_fields = qw/
+    owner-id
+    owner-login
+/;
+
 sub get {
     my ($self, %filter) = @_;
     my $bulk_send = delete $filter{bulk_send};
 
-    my $data = { 
-        filter => @_ > 2 ? \%filter : '',
-    };
+    my $data = {};
+    $data->{filter} = @_ > 2 ? \%filter : '';
+    foreach my $field ( @main_fields ) {
+	if ( exists $data->{filter}->{ $field } ) {
+	    $data->{ $field } = delete $data->{filter}->{ $field };
+	}
+    }
 
     return $bulk_send ? $data : 
         $self->plesk->send('service-plan-addon', 'get', $data);

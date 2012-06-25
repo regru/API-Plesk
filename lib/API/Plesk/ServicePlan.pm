@@ -8,9 +8,12 @@ use Carp;
 use Data::Dumper;
 use base 'API::Plesk::Component';
 
-my @main_fields = qw(
+my @header_fields = qw(
     owner-id
     owner-login
+);
+
+my @other_fields = qw(
     mail
     limits
     log-rotation
@@ -22,14 +25,19 @@ my @main_fields = qw(
     name
 );
 
+my @main_fields = ( @header_fields, @other_fields );
 
 sub get {
     my ($self, %filter) = @_;
     my $bulk_send = delete $filter{bulk_send};
 
-    my $data = { 
-        filter => @_ > 2 ? \%filter : '',
-    };
+    my $data = {};
+    $data->{filter} = @_ > 2 ? \%filter : '';
+    foreach my $field ( @header_fields ) {
+	if ( exists $data->{filter}->{ $field } ) {
+	    $data->{ $field } = delete $data->{filter}->{ $field };
+	}
+    }
 
     return $bulk_send ? $data : 
         $self->plesk->send('service-plan', 'get', $data);
