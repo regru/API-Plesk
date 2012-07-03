@@ -28,16 +28,14 @@ my @other_fields = qw(
 my @main_fields = ( @header_fields, @other_fields );
 
 sub get {
-    my ($self, %filter) = @_;
-    my $bulk_send = delete $filter{bulk_send};
+    my ($self, %params) = @_;
+    my $bulk_send = delete $params{bulk_send};
 
-    my $data = {};
-    $data->{filter} = @_ > 2 ? \%filter : '';
-    foreach my $field ( @header_fields ) {
-	if ( exists $data->{filter}->{ $field } ) {
-	    $data->{ $field } = delete $data->{filter}->{ $field };
-	}
-    }
+    my $filter = delete $params{filter} || '';
+    my $data = [
+	{ filter => $filter },
+	@{ $self->sort_params( \%params, @main_fields ) },
+    ];
 
     return $bulk_send ? $data : 
         $self->plesk->send('service-plan', 'get', $data);

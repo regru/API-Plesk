@@ -60,15 +60,16 @@ is_deeply(
 
 is_deeply(
     $api->service_plan->get(
-	name => 'Host-Lite',
-	'owner-id' => 123,
-	bulk_send => 1,
-    ),
-    {
-	'owner-id' => 123,
 	filter => {
 	    name => 'Host-Lite',
-	}
-    },
+	},
+	'owner-id' => 123,
+	bulk_send => 0,
+    ),
+    [
+	{ filter => { name => 'Host-Lite' } },
+	{ 'owner-id' => 123 },
+    ],
     'get'
 );
+
