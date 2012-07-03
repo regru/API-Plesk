@@ -64,7 +64,7 @@ is_deeply(
 	    name => 'Host-Lite',
 	},
 	'owner-id' => 123,
-	bulk_send => 0,
+	bulk_send => 1,
     ),
     [
 	{ filter => { name => 'Host-Lite' } },
