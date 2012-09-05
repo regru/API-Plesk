@@ -109,7 +109,7 @@ sub xml_http_req {
     # LWP6 hack to prevent verification of hostname
     $ua->ssl_opts(verify_hostname => 0) if $ua->can('ssl_opts');
 
-    warn $req->as_string if $self->{debug} && $self->{debug} > 1;
+    warn $req->as_string   if defined $self->{debug}  &&  $self->{debug} > 1;
 
     my $res = eval {
         local $SIG{ALRM} = sub { die "connection timeout" };
@@ -118,7 +118,7 @@ sub xml_http_req {
     };
     alarm 0;
 
-    warn $res->as_string if $self->{debug} && $self->{debug} > 1;
+    warn $res->as_string   if defined $self->{debug}  &&  $self->{debug} > 1;
 
     return ('', 'connection timeout') 
         if !$res || $@ || ref $res && $res->status_line =~ /connection timeout/;
