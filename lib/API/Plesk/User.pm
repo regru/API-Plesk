@@ -30,7 +30,7 @@ sub add {
     
     my $unsorteddata = {
         'gen-info' => $self->sort_params($params{gen_info}, @gen_info_fields),
-	roles => $roles,
+        roles => $roles,
     };
     my $data = $self->sort_params($unsorteddata, qw(gen-info roles));
 

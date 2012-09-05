@@ -184,7 +184,7 @@ sub check_input_data {
 sub gen_passwd {
     my $passwd='';
     for (my $i=0; $i<8; $i++) {
-	$passwd .= chr(rand( 0x3E ));
+        $passwd .= chr(rand( 0x3E ));
     }
     $passwd =~ tr/\x00-\x3D/A-Za-z0-9/;
     return $passwd;

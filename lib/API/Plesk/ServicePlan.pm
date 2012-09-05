@@ -33,8 +33,8 @@ sub get {
 
     my $filter = delete $params{filter} || '';
     my $data = [
-	{ filter => $filter },
-	@{ $self->sort_params( \%params, @main_fields ) },
+        { filter => $filter },
+        @{ $self->sort_params( \%params, @main_fields ) },
     ];
 
     return $bulk_send ? $data : 
