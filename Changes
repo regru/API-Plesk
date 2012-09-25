@@ -1,5 +1,8 @@
 Revision history for Perl extension API::Plesk.
 
+2.02
+    Fixed some warnings
+
 2.01 2012-06-25
     Fixed tests
 
