@@ -71,7 +71,7 @@ sub data {
 
 sub results {
     my ( $self ) = @_;
-    return   unless $self->is_success; 
+    return   unless $self->is_success;
     return $self->{results} || [];
 }
 
@@ -112,7 +112,7 @@ sub is_connection_error {
     return
         $self->error_text =~ /connection failed/ ||
         $self->error_text =~ /connection timeout/ ||
-        $self->error_text =~ /500 SSL read timeout/
+        $self->error_text =~ /500\s+/
             ? 1 : 0;
 }
 
