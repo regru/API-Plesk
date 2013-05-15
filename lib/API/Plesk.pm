@@ -23,6 +23,7 @@ init_components(
     customer           => [['1.6.3.0', 'Customer']],
     webspace           => [['1.6.3.0', 'Webspace']],
     site               => [['1.6.3.0', 'Site']],
+    subdomain          => [['1.6.3.0', 'Subdomain']],
     site_alias         => [['1.6.3.0', 'SiteAlias']],
     sitebuilder        => [['1.6.3.0', 'SiteBuilder']],
     ftp_user           => [['1.6.3.0', 'FTPUser']],
@@ -33,8 +34,8 @@ init_components(
     dns                => [['1.6.3.0', 'DNS']],
     mail               => [['1.6.3.0', 'Mail']],
     user               => [['1.6.3.0', 'User']],
-   
-    # old 
+
+    # old
     Accounts => [['1.5.0.0', 'Accounts']],
     Domains  => [['1.5.0.0', 'Domains']],
 );
@@ -43,7 +44,7 @@ init_components(
 sub new {
     my $class = shift;
     $class = ref ($class) || $class;
-    
+
     my $self = {
         username    => '',
         password    => '',
@@ -79,7 +80,7 @@ sub send {
 
     unless ( $error ) {
         $response = xml2hash $response, array => [$operation, 'result', 'property'];
-    }    
+    }
 
     return API::Plesk::Response->new(
         operator  => $operator,
@@ -120,7 +121,7 @@ sub xml_http_req {
 
     warn $res->as_string   if defined $self->{debug}  &&  $self->{debug} > 1;
 
-    return ('', 'connection timeout') 
+    return ('', 'connection timeout')
         if !$res || $@ || ref $res && $res->status_line =~ /connection timeout/;
 
     return $res->is_success() ?
@@ -170,7 +171,7 @@ sub _render_xml {
         }
     }
 
-    $xml; 
+    $xml;
 }
 
 
@@ -188,12 +189,12 @@ sub init_components {
             $self->{"_$alias"} ||= $self->load_component($classes);
             return $self->{"_$alias"} || confess "Not implemented!";
         };
-        
+
         no strict 'refs';
- 
+
         *{"$caller\::$alias"} = $sub;
 
-        
+
     }
 
 }
@@ -204,7 +205,7 @@ sub load_component {
     my $version = version->parse($self->{api_version});
 
     for my $item ( @$classes ) {
-        
+
         # select compitable version of component
         if ( $version >= $item->[0] ) {
 
@@ -261,13 +262,13 @@ API::Plesk - OO interface to the Plesk XML API (http://www.parallels.com/en/prod
 
 =head1 DESCRIPTION
 
-At present the module provides interaction with Plesk 10.1 (API 1.6.3.1). 
+At present the module provides interaction with Plesk 10.1 (API 1.6.3.1).
 Distribution was completely rewritten and become more friendly for developers.
 Naming of packages and methods become similar to the same operators and operations of Plesk XML API.
 
 Partially implemented:
 
-API::Plesk::Customer 
+API::Plesk::Customer
 
 API::Plesk::Database
 
@@ -306,9 +307,9 @@ This is develover release. Comapatibility with Plesk::API 1.* is not implemented
 Create new class instance.
 
 Required params:
-username    
-password    
-url         
+username
+password
+url
 
 Additional params:
 api_version - default 1.6.3.1
@@ -336,7 +337,7 @@ Returns array ( $response_xml, $error ).
 =back
 
 =head1 SEE ALSO
- 
+
 Plesk XML RPC API  http://www.parallels.com/en/products/plesk/docs/
 
 =head1 AUTHOR
