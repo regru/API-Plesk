@@ -48,6 +48,7 @@ sub new {
     my $self = {
         username    => '',
         password    => '',
+        secret_key  => '',
         url         => '',
         api_version => '1.6.3.1',
         debug       => 0,
@@ -55,8 +56,10 @@ sub new {
         (@_)
     };
 
-    confess "Required username!" unless $self->{username};
-    confess "Required password!" unless $self->{password};
+    if (!$self->{secret_key}) {
+        confess "Required username!" unless $self->{username};
+        confess "Required password!" unless $self->{password};
+    }
     confess "Required url!"      unless $self->{url};
 
     return bless $self, $class;
@@ -102,8 +105,12 @@ sub xml_http_req {
     my $ua = new LWP::UserAgent( parse_head => 0 );
     my $req = new HTTP::Request POST => $self->{url};
 
-    $req->push_header(':HTTP_AUTH_LOGIN',  $self->{username});
-    $req->push_header(':HTTP_AUTH_PASSWD', $self->{password});
+    if ($self->{secret_key}) {
+        $req->push_header(':KEY',  $self->{secret_key});
+    } else {
+        $req->push_header(':HTTP_AUTH_LOGIN',  $self->{username});
+        $req->push_header(':HTTP_AUTH_PASSWD', $self->{password});
+    }
     $req->content_type('text/xml; charset=UTF-8');
     $req->content($xml);
 

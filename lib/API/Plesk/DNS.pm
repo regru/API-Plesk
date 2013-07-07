@@ -55,4 +55,16 @@ sub del_rec {
         $self->plesk->send('dns', 'del_rec', $data);
 }
 
+sub get_soa {
+    my ( $self, %filter ) = @_;
+    my $bulk_send = delete $filter{bulk_send};
+
+    my $data = [
+        { filter  => @_ > 2 ? \%filter : '' }
+    ];
+
+    return $bulk_send ? $data : 
+        $self->plesk->send('dns', 'get', $data);
+}
+
 1;
