@@ -347,13 +347,27 @@ Returns array ( $response_xml, $error ).
 
 Plesk XML RPC API  http://www.parallels.com/en/products/plesk/docs/
 
-=head1 AUTHOR
+=head1 AUTHORS
 
 Odintsov Pavel E<lt>nrg[at]cpan.orgE<gt>
 
+Ivan Sokolov E<lt>ivsokolov[at]cpan.orgE<gt>
+
+B<Thanks for contribution:>
+
 Nikolay Shulyakovskiy E<lt>shulyakovskiy[at]rambler.ruE<gt>
 
-Ivan Sokolov E<lt>ivsokolov[at]cpan.orgE<gt>
+bgmilne
+
+Eugeny Zavarykin
+
+Eugen Konkov
+
+Ivan Shamal
+
+Akzhan Abdulin
+
+Jari Turkia
 
 =head1 COPYRIGHT AND LICENSE
 

@@ -1,7 +1,14 @@
 Revision history for Perl extension API::Plesk.
 
 2.02 2012-09-05
+    Added DNS zone SOA get (Jari Turkia)
+    Added secret key -based authentication (by Jari Turkia)
     Fixed warning about uninitialized value
+    subdomain added (Zavarykin Eugeny)
+    is_connection_error modified (Zavarykin Eugeny)
+    fixed warning and bug (Eugen Konkov)
+    .gitignore (Akzhan Abdulin)
+    fixed bug (Ivan Shamal)
 
 2.01 2012-06-25
     Fixed tests
