@@ -70,4 +70,3 @@ is($res->error_codes->[0], '1018');
 is($res->error_texts->[0], 'Unable to create hosting on ip 12.34.56.78. Ip address does not exist in client\'s pool');
 is($res->error, '1018: Unable to create hosting on ip 12.34.56.78. Ip address does not exist in client\'s pool');
 is($res->errors->[0], '1018: Unable to create hosting on ip 12.34.56.78. Ip address does not exist in client\'s pool');
-

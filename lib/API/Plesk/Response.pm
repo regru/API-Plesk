@@ -5,7 +5,6 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use Try::Tiny;
 
 sub new {
     my ( $class, %attrs) = @_;
@@ -34,18 +33,19 @@ sub new {
         $operation  = '';
     }
     else {
-        try {
+        eval {
             for my $result ( @{$response->{packet}->{$operator}->{$operation}->[0]->{result}} ) {
                 push @$results, $result;
                 $is_success = '' if $result->{status} && $result->{status} eq 'error';
             }
-        } catch {
+            1;
+        } || do {
             $results = [{
                 errcode => '',
-                errtext => "Internal Plesk error: $_.\nDetails:" .Dumper( $response ),
+                errtext => "Internal Plesk error: $_.\nError: $@\nDetails:" . Dumper( $response ),
                 status  => 'error'
             }];
-        }
+        };
     }
 
     my $self = {
