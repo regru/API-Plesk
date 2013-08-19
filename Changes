@@ -1,79 +1,100 @@
-Revision history for Perl extension API::Plesk.
+Revision history for Perl module API::Plesk.
+
+2.03 <date>
+
+    - removed Try::Tiny
+    - Changes was formated according to CPAN::Changes::Spec
 
 2.02 2013-07-10
-    Added DNS zone SOA get (Jari Turkia)
-    Added secret key -based authentication (by Jari Turkia)
-    Fixed warning about uninitialized value
-    subdomain added (Zavarykin Eugeny)
-    is_connection_error modified (Zavarykin Eugeny)
-    fixed warning and bug (Eugen Konkov)
-    .gitignore (Akzhan Abdulin)
-    fixed bug (Ivan Shamal)
+
+    - Added DNS zone SOA get (Jari Turkia)
+    - Added secret key -based authentication (by Jari Turkia)
+    - Fixed warning about uninitialized value
+    - subdomain added (Zavarykin Eugeny)
+    - is_connection_error modified (Zavarykin Eugeny)
+    - fixed warning and bug (Eugen Konkov)
+    - .gitignore (Akzhan Abdulin)
+    - fixed bug (Ivan Shamal)
 
 2.01 2012-06-25
-    Fixed tests
+    
+    - Fixed tests
 
 2.00 2012-06-25
-    Improved is_connection_error function
-    Added user component (bgmilne)
-    Added mock module for testing without sending requests to real api
-    Fixed bug in service_plan->get method
 
-2.00_3 12 Aug 10:00
-    Added site-alias component
-    Fixed add and set webspace
-    Added tests
-    Fixed site component
-    Added sitebuilder component
-    Added ftp-user component
-    Fixed hosting ftp_password bug
-    Added dns component 
-    Added mail component
-    Fixed is_connection_error function
-    Added set and del opetations to service-plan
-    Added test of service-plan component
-    Reformated Changes
-    Fixed Pod
+    - Improved is_connection_error function
+    - Added user component (bgmilne)
+    - Added mock module for testing without sending requests to real api
+    - Fixed bug in service_plan->get method
 
-2.00_2 16 May 2011 11:36:20
-    Fixed xml renderer
+2.00_3 2011-08-01
+
+    - Added site-alias component
+    - Fixed add and set webspace
+    - Added tests
+    - Fixed site component
+    - Added sitebuilder component
+    - Added ftp-user component
+    - Fixed hosting ftp_password bug
+    - Added dns component 
+    - Added mail component
+    - Fixed is_connection_error function
+    - Added set and del opetations to service-plan
+    - Added test of service-plan component
+    - Reformated Changes
+    - Fixed Pod
+
+2.00_2 2011-05-16
+    
+    - Fixed xml renderer
 
 2.00_1 20 Apr 2011 10:52:43
-    Fully rewrited
-    Compatibility with Plesk API 1.6.3.1
 
-1.09
-    Add Mail/DB/DBUsers/Domains export from Plesk
+    - Fully rewrited
+    - Compatibility with Plesk API 1.6.3.1
 
-1.08
-    Patch from Nikolay Shulyakovskiy
+1.09 2009-07-28
 
-1.07 Jul 31 17:31:47 SAMST 2008
-    Fixed Build.PL (Test::LongString not in prereqs_build  list but required )
-    Add URI.pm as required module for test stage
+    - Add Mail/DB/DBUsers/Domains export from Plesk
 
-1.06 Jul 13 19:48:47 SAMST 2008
-    More improvements in tests
-    Get user domains list by login or client id
+1.08 2009-07-23
 
-1.05 Jun 15 19:46:22 SAMST 2008
-    Added full support operations with databases and db users
-    Fixed errors in pod documentation
+    - Patch from Nikolay Shulyakovskiy
 
-1.04 May 29 04:14:14 SAMST 2008
-    Added the ability to fine tuning the abstract_parser sub (for API::PleskExpand)
+1.07 2008-07-31
 
-1.03 May 25 17:30:43 SAMST 2008
-    Small bug fix
+    - Fixed Build.PL (Test::LongString not in prereqs_build  list but required )
+    - Add URI.pm as required module for test stage
 
-1.02 Mar 22 10:54:49 SAMT 2008
-    Fixed errors in pod documentation
-    Fixed bug with keys sorting in Methods.pm (thanks to CPAN testers)
+1.06 2008-07-13
+    
+    - More improvements in tests
+    - Get user domains list by login or client id
 
-1.01 Mar 20 00:10:43 SAMT 2008
-    Fixed errors in pod documentation
-    Fixed bug in Tariff Plan Change sub (Complex.pm) 
+1.05 2008-06-15
 
-1.00 Mar 18 08:57:17 SAMT 2008
-    The first public release
+    - Added full support operations with databases and db users
+    - Fixed errors in pod documentation
+
+1.04 2008-05-29
+
+    - Added the ability to fine tuning the abstract_parser sub (for API::PleskExpand)
+
+1.03 2008-05-25
+    
+    - Small bug fix
+
+1.02 2008-03-22
+
+    - Fixed errors in pod documentation
+    - Fixed bug with keys sorting in Methods.pm (thanks to CPAN testers)
+
+1.01 2008-03-20
+
+    - Fixed errors in pod documentation
+    - Fixed bug in Tariff Plan Change sub (Complex.pm) 
+
+1.00 2008-03-18
+
+    - The first public release
     
