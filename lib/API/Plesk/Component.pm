@@ -68,7 +68,7 @@ sub check_hosting {
         $self->check_required_params($hosting, qw(ftp_login ftp_password));
 
         my @properties;
-        for my $key ( keys %$hosting ) {
+        for my $key ( sort keys %$hosting ) {
             push @properties, { property => [
                 {name => $key}, 
                 {value => $hosting->{$key}} 

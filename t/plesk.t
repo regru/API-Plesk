@@ -30,11 +30,11 @@ isnt( $api, $yet_another_api, 'object compare' );
 is($api->render_xml({
     webspace => {
         add => [
-            { gen_setup => {
-                name => 'sample.com',
-                qq => sub { 'ddd' },
-                ddd => sub { {lll => 1234567} },
-            }},
+            { gen_setup => [
+                { qq => sub { 'ddd' } },
+                { name => 'sample.com' },
+                { ddd => sub { {lll => 1234567} } },
+            ]},
             { hosting => {
                 name => '123',
                 value => 'erty'
