@@ -15,7 +15,7 @@ sub create {
 
     $self->check_required_params(\%params, [qw(site-id name)]);
 
-    return $bulk_send ? \%params : 
+    return $bulk_send ? \%params :
         $self->plesk->send('site-alias', 'create', \%params);
 }
 
@@ -23,32 +23,32 @@ sub get {
     my ($self, %filter) = @_;
     my $bulk_send = delete $filter{bulk_send};
 
-    my $data = { 
+    my $data = {
         filter  => @_ > 2 ? \%filter : '',
     };
 
-    return $bulk_send ? $data : 
+    return $bulk_send ? $data :
         $self->plesk->send('site-alias', 'get', $data);
 }
 
 sub set {
     my ( $self, %params ) = @_;
-    my $bulk_send = delete $params{bulk_send}; 
-    
-    return $bulk_send ? \%params : 
+    my $bulk_send = delete $params{bulk_send};
+
+    return $bulk_send ? \%params :
         $self->plesk->send('site-alias', 'set', \%params);
 }
 
 sub del {
     my ($self, %filter) = @_;
-    my $bulk_send = delete $filter{bulk_send}; 
+    my $bulk_send = delete $filter{bulk_send};
 
     my $data = {
         filter  => @_ > 2 ? \%filter : ''
     };
 
-    return $bulk_send ? $data : 
-        $self->plesk->send('site-alias', 'del', $data);
+    return $bulk_send ? $data :
+        $self->plesk->send('site-alias', 'delete', $data);
 }
 
 1;
