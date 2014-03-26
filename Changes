@@ -1,5 +1,9 @@
 Revision history for Perl module API::Plesk.
 
+2.04 ---
+
+    - Added reseller component
+
 2.03 2013-08-19
 
     - removed Try::Tiny
@@ -18,7 +22,7 @@ Revision history for Perl module API::Plesk.
     - fixed bug (Ivan Shamal)
 
 2.01 2012-06-25
-    
+
     - Fixed tests
 
 2.00 2012-06-25
@@ -37,7 +41,7 @@ Revision history for Perl module API::Plesk.
     - Added sitebuilder component
     - Added ftp-user component
     - Fixed hosting ftp_password bug
-    - Added dns component 
+    - Added dns component
     - Added mail component
     - Fixed is_connection_error function
     - Added set and del opetations to service-plan
@@ -46,7 +50,7 @@ Revision history for Perl module API::Plesk.
     - Fixed Pod
 
 2.00_2 2011-05-16
-    
+
     - Fixed xml renderer
 
 2.00_1 20 Apr 2011 10:52:43
@@ -68,7 +72,7 @@ Revision history for Perl module API::Plesk.
     - Add URI.pm as required module for test stage
 
 1.06 2008-07-13
-    
+
     - More improvements in tests
     - Get user domains list by login or client id
 
@@ -82,7 +86,7 @@ Revision history for Perl module API::Plesk.
     - Added the ability to fine tuning the abstract_parser sub (for API::PleskExpand)
 
 1.03 2008-05-25
-    
+
     - Small bug fix
 
 1.02 2008-03-22
@@ -93,9 +97,9 @@ Revision history for Perl module API::Plesk.
 1.01 2008-03-20
 
     - Fixed errors in pod documentation
-    - Fixed bug in Tariff Plan Change sub (Complex.pm) 
+    - Fixed bug in Tariff Plan Change sub (Complex.pm)
 
 1.00 2008-03-18
 
     - The first public release
-    
+
