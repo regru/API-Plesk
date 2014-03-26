@@ -24,7 +24,7 @@ isa_ok($server, 'API::Plesk::Server');
 isa_ok($api->server, 'API::Plesk::Server');
 
 is_deeply(
-    $server->set(passwd => 1, bulk_send => 1),
-    { passwd => 1 },
+    $server->set(password => 1, bulk_send => 1),
+    { password => 1 },
     'set'
 );
