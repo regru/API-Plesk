@@ -72,7 +72,7 @@ sub set {
     my $data = {
         filter  => $filter,
         values => {
-            gen_info => $gen_info,
+            'gen-info' => $gen_info,
         }
     };
 
