@@ -34,6 +34,7 @@ init_components(
     dns                => [['1.6.3.0', 'DNS']],
     mail               => [['1.6.3.0', 'Mail']],
     user               => [['1.6.3.0', 'User']],
+    reseller           => [['1.6.3.0', 'Reseller']],
 
     # old
     Accounts => [['1.5.0.0', 'Accounts']],
