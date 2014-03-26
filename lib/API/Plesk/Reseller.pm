@@ -48,7 +48,7 @@ sub get {
     my $data = {
         filter => @_ > 2 ? \%filter : '',
         dataset => [
-            {gen_info       => ''},
+            {'gen-info'     => ''},
             {stat           => ''},
             {permitions     => ''},
             {limits         => ''},
@@ -98,19 +98,19 @@ __END__
 
 =head1 NAME
 
-API::Plesk::Customer -  Managing customer accounts.
+API::Plesk::Reseller -  Managing reseller accounts.
 
 =head1 SYNOPSIS
 
     $api = API::Plesk->new(...);
-    $response = $api->customer->add(..);
-    $response = $api->customer->get(..);
-    $response = $api->customer->set(..);
-    $response = $api->customer->del(..);
+    $response = $api->reseller->add(..);
+    $response = $api->reseller->get(..);
+    $response = $api->reseller->set(..);
+    $response = $api->reseller->del(..);
 
 =head1 DESCRIPTION
 
-Module manage customer accounts.
+Module manage reseller accounts.
 
 =head1 METHODS
 
@@ -118,7 +118,7 @@ Module manage customer accounts.
 
 =item add(%params)
 
-Method adds customer to Plesk Panel.
+Method adds reseller to Plesk Panel.
 
     %params = (
         # required
@@ -132,7 +132,7 @@ Method adds customer to Plesk Panel.
 
 =item get(%params)
 
-Method gets customer data.
+Method gets reseller data.
 
     %params = (
         filter => {...}
@@ -140,7 +140,7 @@ Method gets customer data.
 
 =item set(%params)
 
-Method sets customer data.
+Method sets reseller data.
 
     %params = (
         filter   => {...},
@@ -149,7 +149,7 @@ Method sets customer data.
 
 =item del(%params)
 
-Method deletes customer from Plesk Panel.
+Method deletes reseller from Plesk Panel.
 
     %params = (
         filter => {...}
