@@ -40,9 +40,10 @@ sub new {
             }
             1;
         } || do {
+            my $plesk_error = $_ // '';
             $results = [{
                 errcode => '',
-                errtext => "Internal Plesk error: $_.\nError: $@\nDetails:" . Dumper( $response ),
+                errtext => "Internal Plesk error: $plesk_error.\nError: $@\nDetails:" . Dumper( $response ),
                 status  => 'error'
             }];
         };
