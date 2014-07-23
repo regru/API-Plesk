@@ -28,7 +28,7 @@ is_deeply(
     {
         filter => {id => 1},
         dataset => [
-	        {gen_info       => ''},
+	        {'gen-info'     => ''},
     	    {stat           => ''},
         	{permitions     => ''},
         	{limits         => ''},
