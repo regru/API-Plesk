@@ -93,3 +93,79 @@ sub upd_soa {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+API::Plesk::DNS - Managing DNS records.
+
+=head1 SYNOPSIS
+
+    $api = API::Plesk->new(...);
+    $response = $api->dns->get_rec(..);
+    $response = $api->dns->add_rec(..);
+    $response = $api->dns->del_rec(..);
+    $response = $api->dns->get_soa(..);
+    $response = $api->dns->upd_soa(..);
+
+=head1 DESCRIPTION
+
+Module manage DNS records of the site, site alias or zone template.
+
+=head1 METHODS
+
+=over 3
+
+=item get_rec(%params)
+
+Retrieves the DNS resource records.
+
+    $api->dns->get_rec('site-id' => 1234);
+
+=item add_rec(%params)
+
+Adds resource record(s).
+
+    $api->dns->add_rec(
+        'site-id'   => 1234,
+        'type'      => 'A',
+        'host'      => 'mail',
+        'value'     => '192.0.2.12',
+    );
+
+=item del_rec(%params)
+
+Removes resource record(s).
+
+    $api->dns->del_rec(id => 67023);
+
+=item get_soa(%params)
+
+Retrives SOA resource record(s).
+
+    $api->dns->get_soa('site-id' => 1234);  # scope: site
+    $api->dns->get_soa();                   # scope: zone-template
+
+=item upd_soa(%params)
+
+Updates SOA resource record(s).
+
+    $api->dns->upd_soa(
+        'site-id'   => 1234,        # scope: site
+        'ttl'       => 86400,       # optional
+        'minimum'   => 10800,       # optional
+        'refresh'   => 10800,       # optional
+        'retry'     => 3600,        # optional
+        'expire'    => 604800,      # optional
+    );
+
+All missed (optional) parameters of the SOA record will be set by Plesk with defaults as seen above.
+
+=back
+
+=head1 AUTHOR
+
+Ivan Sokolov <lt>ivsokolov@cpan.org<gt>
+
+=cut
