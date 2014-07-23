@@ -11,7 +11,7 @@ use lib 't';
 use TestData;
 
 BEGIN {
-    plan tests => 8;
+    plan tests => 9;
     use_ok('API::Plesk::DNS');
 }
 
@@ -93,4 +93,19 @@ is_deeply(
         },
     },
     'upd_soa.3'
+);
+
+is_deeply(
+    $dns->upd_soa(
+        bulk_send => 1,
+        ttl => 300,
+        minimum => 150,
+    ),
+    {
+        soa     => {
+            ttl     => 300,
+            minimum => 150,
+        },
+    },
+    'upd_soa.4'
 );

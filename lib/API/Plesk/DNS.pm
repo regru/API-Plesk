@@ -84,7 +84,7 @@ sub upd_soa {
                 grep { defined $soa_fields{$_} } keys %soa_fields;
 
     my $data = {
-        filter  => @_ > 2 ? \%filter : '',
+        ( %filter ? ( filter => \%filter ) : () ),
         soa     => \%soa,
     };
 
