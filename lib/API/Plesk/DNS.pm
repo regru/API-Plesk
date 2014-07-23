@@ -68,4 +68,28 @@ sub get_soa {
         $self->plesk->send('dns', 'get', $data);
 }
 
+sub upd_soa {
+    my ( $self, %filter ) = @_;
+    my $bulk_send   = delete $filter{bulk_send};
+
+    my %soa_fields = (
+        ttl     => delete $filter{ttl},
+        minimum => delete $filter{minimum},
+        refresh => delete $filter{refresh},
+        retry   => delete $filter{retry},
+        expire  => delete $filter{expire},
+    );
+
+    my %soa = map { $_ => $soa_fields{$_} }
+                grep { defined $soa_fields{$_} } keys %soa_fields;
+
+    my $data = {
+        filter  => @_ > 2 ? \%filter : '',
+        soa     => \%soa,
+    };
+
+    return $bulk_send ? $data :
+        $self->plesk->send('dns', 'set', $data);
+}
+
 1;
