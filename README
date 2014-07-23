@@ -39,9 +39,13 @@ DESCRIPTION
 
     API::Plesk::DNS
 
-    API:Plesk::FTPUser
+    API::Plesk::FTPUser
 
-    API:Plesk::Mail
+    API::Plesk::Mail
+
+    API::Plesk::Reseller
+
+    API::Plesk::Server
 
     API::Plesk::ServicePlan
 
@@ -52,6 +56,10 @@ DESCRIPTION
     API::Plesk::SiteAlias
 
     API::Plesk::SiteBuilder
+
+    API::Plesk::Subdomain
+
+    API::Plesk::User
 
     API::Plesk::Webspace
 
@@ -90,12 +98,26 @@ METHODS
 SEE ALSO
     Plesk XML RPC API http://www.parallels.com/en/products/plesk/docs/
 
-AUTHOR
+AUTHORS
     Odintsov Pavel <nrg[at]cpan.org>
+
+    Ivan Sokolov <ivsokolov[at]cpan.org>
+
+    Thanks for contribution:
 
     Nikolay Shulyakovskiy <shulyakovskiy[at]rambler.ru>
 
-    Ivan Sokolov <ivsokolov[at]cpan.org>
+    bgmilne
+
+    Eugeny Zavarykin
+
+    Eugen Konkov
+
+    Ivan Shamal
+
+    Akzhan Abdulin
+
+    Jari Turkia
 
 COPYRIGHT AND LICENSE
     Copyright (C) 2008 by Ivan Sokolov

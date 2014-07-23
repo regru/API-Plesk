@@ -277,31 +277,37 @@ Naming of packages and methods become similar to the same operators and operatio
 
 Partially implemented:
 
-API::Plesk::Customer
+L<API::Plesk::Customer>
 
-API::Plesk::Database
+L<API::Plesk::Database>
 
-API::Plesk::DNS
+L<API::Plesk::DNS>
 
-API:Plesk::FTPUser
+L<API::Plesk::FTPUser>
 
-API:Plesk::Mail
+L<API::Plesk::Mail>
 
-API::Plesk::ServicePlan
+L<API::Plesk::Reseller>
 
-API::Plesk::ServicePlanAddon
+L<API::Plesk::Server>
 
-API::Plesk::Site
+L<API::Plesk::ServicePlan>
 
-API::Plesk::SiteAlias
+L<API::Plesk::ServicePlanAddon>
 
-API::Plesk::SiteBuilder
+L<API::Plesk::Site>
 
-API::Plesk::Webspace
+L<API::Plesk::SiteAlias>
 
-API::Plesk::WebUser
+L<API::Plesk::SiteBuilder>
 
-API::Plesk::User
+L<API::Plesk::Subdomain>
+
+L<API::Plesk::User>
+
+L<API::Plesk::Webspace>
+
+L<API::Plesk::WebUser>
 
 =head1 COMPATIBILITY WITH VERSION 1.*
 
