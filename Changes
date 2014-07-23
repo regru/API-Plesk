@@ -4,6 +4,8 @@ Revision history for Perl module API::Plesk.
 
     - Added reseller component
     - Added server compoment
+    - Fixed tests
+    - Added support for SOA records updating.
 
 2.03 2013-08-19
 
@@ -103,4 +105,3 @@ Revision history for Perl module API::Plesk.
 1.00 2008-03-18
 
     - The first public release
-
