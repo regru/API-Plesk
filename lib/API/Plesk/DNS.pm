@@ -60,7 +60,7 @@ sub get_soa {
     my $bulk_send = delete $filter{bulk_send};
 
     my $data = {
-        filter  => @_ > 2 ? \%filter : '',
+        ( %filter ? ( filter => \%filter ) : () ),
         soa     => '',
     };
 

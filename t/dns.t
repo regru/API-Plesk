@@ -11,7 +11,7 @@ use lib 't';
 use TestData;
 
 BEGIN {
-    plan tests => 7;
+    plan tests => 8;
     use_ok('API::Plesk::DNS');
 }
 
@@ -29,7 +29,15 @@ is_deeply(
         filter  => { id => 1 },
         soa     => '',
     },
-    'get_soa'
+    'get_soa.1'
+);
+
+is_deeply(
+    $dns->get_soa(bulk_send => 1),
+    {
+        soa     => '',
+    },
+    'get_soa.2'
 );
 
 is_deeply(
