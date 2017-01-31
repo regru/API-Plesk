@@ -9,6 +9,11 @@ my $build = Module::Build->new(
     module_name => 'API::Plesk',
     license     => 'perl',
     dist_author => 'Ivan Sokolov <ivsokolov@cpan.org>',
+    meta_merge => {
+        resources => {
+            repository => 'http://github.com/regru/API-Plesk',
+        },
+    },
     requires    => {
         'Module::Build'   => 0,
         'Data::Dumper'    => 0,
